@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1100.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.rafaelvieira.cryptocypher.controller.FileEncryptionController">
+    <AnchorPane fx:id="main_form" prefHeight="685.0" prefWidth="1100.0">
+        <BorderPane layoutX="144.0" prefHeight="600.0" prefWidth="1100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <top>
+                <AnchorPane prefHeight="44.0" prefWidth="1094.0" stylesheets="@../style/MainViewStyle.css" BorderPane.alignment="CENTER">
+                    <styleClass>
+                        <String fx:value="white-bg" />
+                        <String fx:value="border-top" />
+                    </styleClass>
+                    <AnchorPane layoutX="-58.0" layoutY="-86.0" prefHeight="40.0" prefWidth="214.0" styleClass="bg-color-1" stylesheets="@../style/MainViewStyle.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <Label contentDisplay="CENTER" layoutX="46.0" layoutY="8.0" prefHeight="27.0" prefWidth="123.0" text="CryptoCypher" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                    </AnchorPane>
+                    <Label layoutX="1036.0" layoutY="13.0" text="Active" AnchorPane.rightAnchor="31.0" />
+                    <Circle fill="#24c756" layoutX="1081.0" layoutY="22.0" radius="5.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" AnchorPane.rightAnchor="14.0" />
+                    <Label layoutX="687.0" layoutY="12.0" text="Welcome," AnchorPane.rightAnchor="360.0" />
+                    <Label fx:id="top_username" layoutX="747.0" layoutY="11.0" prefHeight="17.0" prefWidth="138.0" text="MarcoMan" AnchorPane.rightAnchor="215.0">
+                        <font>
+                            <Font name="System Bold" size="13.0" />
+                        </font>
+                    </Label>
+                    <Label fx:id="date_time" alignment="CENTER_RIGHT" layoutX="470.0" layoutY="12.0" prefHeight="17.0" prefWidth="187.0" text="MM:DD:YYYY" AnchorPane.rightAnchor="443.0" />
+                    <Label fx:id="current_form" layoutX="233.0" layoutY="11.0" prefHeight="17.0" prefWidth="325.0" styleClass="header-1" stylesheets="@../style/MainViewStyle.css" text="Dashboard CryptoCypher" AnchorPane.leftAnchor="233.0" AnchorPane.topAnchor="11.0">
+                        <font>
+                            <Font size="15.0" />
+                        </font>
+                    </Label>
+                    <Button fx:id="logout_btn" layoutX="947.0" layoutY="9.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="78.0" styleClass="btn-1" stylesheets="@../style/PageDesign.css" text="Logout" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="9.0" />
+                </AnchorPane>
+            </top>
+            <left>
+                <AnchorPane prefHeight="784.0" prefWidth="214.0" styleClass="bg-color-1" stylesheets="@../style/MainViewStyle.css" BorderPane.alignment="CENTER">
+                    <!--                                <FontAwesomeIcon fill="WHITE" glyphName="USER" layoutX="83.0" layoutY="65.0" size="5em" />-->
+                    <Label layoutX="21.0" layoutY="110.0" text="Usuário:" textFill="WHITE" />
+                    <Label fx:id="nav_username" layoutX="83.0" layoutY="109.0" prefHeight="17.0" prefWidth="117.0" text="marcoman" textFill="WHITE">
+                        <font>
+                            <Font name="System Bold" size="13.0" />
+                        </font>
+                    </Label>
+                    <Line endX="88.0" layoutX="113.0" layoutY="152.0" startX="-100.0" stroke="WHITE" />
+                    <!--                                <FontAwesomeIcon fill="#6593c7" glyphName="HOSPITAL_ALT" layoutX="60.0" layoutY="522.0" size="10em" AnchorPane.bottomAnchor="20.857139587402344" AnchorPane.leftAnchor="60.0" />-->
+                    <Label layoutX="13.0" layoutY="162.0" text="Feature" textFill="WHITE" />
+                    <Button fx:id="dashboard_btn" layoutX="7.0" layoutY="187.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" stylesheets="@../style/MainViewStyle.css" text="Encrypt/Decrypt">
+                        <graphic>
+                            <!--                                        <FontAwesomeIcon glyphName="DASHBOARD" size="1.5em" />-->
+                        </graphic>
+                    </Button>
+                    <Button layoutX="7.0" layoutY="237.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" stylesheets="@../style/MainViewStyle.css" text="Historico">
+                        <graphic>
+                            <!--                                        <FontAwesomeIcon glyphName="USER_MD" size="1.5em" />-->
+                        </graphic>
+                    </Button>
+                    <Button layoutX="7.0" layoutY="285.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" stylesheets="@../style/MainViewStyle.css" text="Patients">
+                        <graphic>
+                            <!--                                        <FontAwesomeIcon glyphName="USER" size="1.5em" />-->
+                        </graphic>
+                    </Button>
+                    <Button layoutX="7.0" layoutY="335.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" stylesheets="@../style/MainViewStyle.css" text="Appointments">
+                        <graphic>
+                            <!--                                        <FontAwesomeIcon glyphName="CLIPBOARD" size="1.5em" />-->
+                        </graphic>
+                    </Button>
+                    <Button layoutX="7.0" layoutY="387.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" stylesheets="@../style/MainViewStyle.css" text="Configurações">
+                        <graphic>
+                            <!--                                        <FontAwesomeIcon glyphName="CREDIT_CARD" size="1.5em" />-->
+                        </graphic>
+                    </Button>
+                    <Label layoutX="13.0" layoutY="435.0" text="Profile" textFill="WHITE" />
+                    <Button fx:id="profile_btn" layoutX="7.0" layoutY="460.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" styleClass="nav-btn-1" stylesheets="@../style/MainViewStyle.css" text="Conta">
+                        <graphic>
+                            <!--                                        <FontAwesomeIcon glyphName="COGS" size="1.5em" />-->
+                        </graphic>
+                    </Button>
+                </AnchorPane>
+            </left>
+            <center>
+                <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+                    <AnchorPane fx:id="dashboard_form" layoutX="161.0" layoutY="112.0" prefHeight="556.0" prefWidth="887.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-1.0" AnchorPane.topAnchor="0.0">
+                        <AnchorPane layoutX="13.0" layoutY="14.0" prefHeight="156.0" prefWidth="860.0" stylesheets="@../style/MainViewStyle.css" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="14.0">
+                            <styleClass>
+                                <String fx:value="white-bg" />
+                                <String fx:value="radius" />
+                                <String fx:value="shadow" />
+                            </styleClass>
+                            <AnchorPane prefHeight="153.0" prefWidth="858.0">
+                                <AnchorPane layoutX="31.0" layoutY="20.0" prefHeight="114.0" prefWidth="240.0" stylesheets="@../style/MainViewStyle.css">
+                                    <styleClass>
+                                        <String fx:value="bg-color-1" />
+                                        <String fx:value="radius" />
+                                    </styleClass>
+                                    <!--                                                    <FontAwesomeIcon fill="WHITE" glyphName="USER_MD" layoutX="14.0" layoutY="78.0" size="5em" />-->
+                                    <Label fx:id="dashboard_AD" alignment="CENTER_RIGHT" layoutX="92.0" layoutY="17.0" prefHeight="17.0" prefWidth="134.0" text="0" textFill="WHITE">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <Label alignment="CENTER" layoutX="75.0" layoutY="77.0" prefHeight="17.0" prefWidth="134.0" text="Active Doctor" textFill="WHITE">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                </AnchorPane>
+                                <AnchorPane layoutX="307.0" layoutY="20.0" prefHeight="114.0" prefWidth="240.0" stylesheets="@../style/MainViewStyle.css">
+                                    <styleClass>
+                                        <String fx:value="bg-color-1" />
+                                        <String fx:value="radius" />
+                                    </styleClass>
+                                    <!--                                                    <FontAwesomeIcon fill="WHITE" glyphName="USER" layoutX="14.0" layoutY="78.0" size="5em" />-->
+                                    <Label fx:id="dashboard_TP" alignment="CENTER_RIGHT" layoutX="92.0" layoutY="17.0" prefHeight="17.0" prefWidth="134.0" text="0" textFill="WHITE">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <Label alignment="CENTER" layoutX="75.0" layoutY="77.0" prefHeight="17.0" prefWidth="134.0" text="Total Patients" textFill="WHITE">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                </AnchorPane>
+                                <AnchorPane layoutX="576.0" layoutY="20.0" prefHeight="114.0" prefWidth="240.0" stylesheets="@../style/MainViewStyle.css">
+                                    <styleClass>
+                                        <String fx:value="bg-color-1" />
+                                        <String fx:value="radius" />
+                                    </styleClass>
+                                    <!--                                                    <FontAwesomeIcon fill="WHITE" glyphName="USERS" layoutX="14.0" layoutY="78.0" size="5em" />-->
+                                    <Label fx:id="dashboard_AP" alignment="CENTER_RIGHT" layoutX="92.0" layoutY="17.0" prefHeight="17.0" prefWidth="134.0" text="0" textFill="WHITE">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                    <Label alignment="CENTER" layoutX="75.0" layoutY="77.0" prefHeight="17.0" prefWidth="134.0" text="Active Patients" textFill="WHITE">
+                                        <font>
+                                            <Font size="14.0" />
+                                        </font>
+                                    </Label>
+                                </AnchorPane>
+                            </AnchorPane>
+                        </AnchorPane>
+                        <AnchorPane layoutX="13.0" layoutY="192.0" prefHeight="354.0" prefWidth="860.0" stylesheets="@../style/MainViewStyle.css" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="13.0" AnchorPane.topAnchor="192.0">
+                            <styleClass>
+                                <String fx:value="white-bg" />
+                                <String fx:value="radius" />
+                                <String fx:value="shadow" />
+                            </styleClass>
+                            <VBox alignment="CENTER" prefHeight="314.0" prefWidth="861.0" spacing="20" style="-fx-padding: 20;">
+                                <HBox alignment="BOTTOM_RIGHT" spacing="5">
+                                    <ComboBox fx:id="algorithmComboBox" prefHeight="30.0" prefWidth="299.0" promptText="Selecionar Algoritmo..." styleClass="textfield-1" stylesheets="@../style/PageDesign.css" />
+                                    <TextField fx:id="inputTextArea" layoutX="137.0" layoutY="71.0" prefHeight="30.0" prefWidth="657.0" promptText="Arquivo carregado" styleClass="textfield-1" stylesheets="@../style/PageDesign.css" />
+                                    <Button layoutX="879.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleEncryptFileUpload" prefHeight="31.0" prefWidth="254.0" styleClass="btn-1" stylesheets="@../style/PageDesign.css" text="Carregar" />
+                                </HBox>
+                                <TextArea fx:id="outputTextArea" editable="false" layoutX="134.0" layoutY="228.0" prefHeight="135.0" prefWidth="821.0" styleClass="textfield-1" stylesheets="@../style/PageDesign.css" />
+                                <VBox alignment="CENTER" spacing="10">
+                                    <ProgressBar fx:id="progressBar" prefHeight="15.0" prefWidth="819.0" progress="0" style="-fx-accent: #61afef;" />
+                                </VBox>
+                                <HBox alignment="BOTTOM_RIGHT" spacing="10">
+                                    <Button layoutY="10.0" mnemonicParsing="false" onAction="#handleDecryptFile" prefHeight="32.0" prefWidth="100.0" styleClass="btn-1" stylesheets="@../style/PageDesign.css" text="Decrypt" textAlignment="CENTER" AnchorPane.rightAnchor="142.0" AnchorPane.topAnchor="10.0" />
+                                    <Button layoutX="879.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleEncryptFile" prefHeight="31.0" prefWidth="107.0" styleClass="btn-1" stylesheets="@../style/PageDesign.css" text="Encrypt" textAlignment="CENTER" AnchorPane.rightAnchor="142.0" AnchorPane.topAnchor="10.0" />
+                                    <Button layoutX="879.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleCopyOutput" prefHeight="32.0" prefWidth="138.0" styleClass="btn-1" stylesheets="@../style/PageDesign.css" text="Copiar Clipboard" AnchorPane.rightAnchor="142.0" AnchorPane.topAnchor="10.0" />
+                                    <Button layoutX="879.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleExportOutput" prefHeight="31.0" prefWidth="108.0" styleClass="btn-1" stylesheets="@../style/PageDesign.css" text="Exporta" AnchorPane.rightAnchor="142.0" AnchorPane.topAnchor="10.0" />
+                                    <Button layoutX="879.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleCleanAllInputs" prefHeight="31.0" prefWidth="108.0" styleClass="btn-1" stylesheets="@../style/PageDesign.css" text="Limpar" AnchorPane.rightAnchor="142.0" AnchorPane.topAnchor="10.0" />
+                                </HBox>
+                            </VBox>
+                        </AnchorPane>
+                    </AnchorPane>
+                </AnchorPane>
+            </center>
+        </BorderPane>
+    </AnchorPane>
+</StackPane>

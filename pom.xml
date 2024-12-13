@@ -108,6 +108,26 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.15.2</version>
         </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx</artifactId>
+            <version>8.9</version>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-fontawesome</artifactId>
+            <version>4.7.0-9.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-commons</artifactId>
+            <version>9.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>17.0.6</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -131,7 +151,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                br.com.rafaelvieira.cryptocypher/br.com.rafaelvieira.cryptocypher.Application
+                                br.com.rafaelvieira.cryptocypher/br.com.rafaelvieira.cryptocypher.AppCryptoCypher
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
