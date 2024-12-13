@@ -14,6 +14,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import org.springframework.stereotype.Controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +23,7 @@ import java.nio.file.Files;
 import java.util.ResourceBundle;
 
 
+@Controller
 public class FileEncryptionController implements Initializable {
 
     public final static String ENCRYPT = "encrypt";
@@ -132,6 +134,10 @@ public class FileEncryptionController implements Initializable {
     private File selectedFile;
 
     private EncryptionService encryptionService;
+
+    public FileEncryptionController(EncryptionService encryptionService) {
+        this.encryptionService = encryptionService;
+    }
 
     @FXML
     public void handleEncryptFileUpload() {

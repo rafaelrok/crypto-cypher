@@ -2,6 +2,9 @@ package br.com.rafaelvieira.cryptocypher.service;
 
 import br.com.rafaelvieira.cryptocypher.domain.EncryptionResult;
 import br.com.rafaelvieira.cryptocypher.enums.CryptographyType;
+import lombok.AllArgsConstructor;
+import lombok.Setter;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -9,19 +12,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+
+@Setter
+@AllArgsConstructor
+@Service
 public class EncryptionService {
 
     private CryptographyType cryptographyType;
-
-    // Construtor que recebe o tipo de criptografia
-    public EncryptionService(CryptographyType cryptographyType) {
-        this.cryptographyType = cryptographyType;
-    }
-
-    // Setter para permitir mudança do tipo de criptografia
-    public void setCryptographyType(CryptographyType cryptographyType) {
-        this.cryptographyType = cryptographyType;
-    }
 
     public EncryptionResult encryptFile(String filePath) throws IOException {
         try {

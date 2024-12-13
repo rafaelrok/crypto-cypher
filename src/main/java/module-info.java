@@ -10,10 +10,25 @@ module br.com.rafaelvieira.cryptocypher {
     requires org.kordamp.bootstrapfx.core;
     requires com.fasterxml.jackson.databind;
     requires fontawesomefx;
+    requires spring.boot.autoconfigure;
+    requires spring.context;
+    requires spring.boot;
+    requires static lombok;
+    requires spring.beans;
 
     opens br.com.rafaelvieira.cryptocypher to javafx.fxml;
-    exports br.com.rafaelvieira.cryptocypher;
-    exports br.com.rafaelvieira.cryptocypher.controller;
     opens br.com.rafaelvieira.cryptocypher.controller to javafx.fxml;
     opens br.com.rafaelvieira.cryptocypher.domain to com.fasterxml.jackson.databind;
+    opens br.com.rafaelvieira.cryptocypher.config to spring.core;
+    opens br.com.rafaelvieira.cryptocypher.service to spring.core;
+    opens br.com.rafaelvieira.cryptocypher.service.impl to spring.core;
+    opens br.com.rafaelvieira.cryptocypher.util to spring.core;
+
+    exports br.com.rafaelvieira.cryptocypher;
+    exports br.com.rafaelvieira.cryptocypher.controller;
+    exports br.com.rafaelvieira.cryptocypher.service;
+    exports br.com.rafaelvieira.cryptocypher.service.impl;
+    exports br.com.rafaelvieira.cryptocypher.domain;
+    exports br.com.rafaelvieira.cryptocypher.config;
+    exports br.com.rafaelvieira.cryptocypher.util;
 }
