@@ -16,7 +16,6 @@ public class AppCryptoCypher extends Application {
 
     @Override
     public void init() {
-//        context = new SpringApplicationBuilder(CryptoCypherApplication.class).run();
         String[] args = getParameters().getRaw().toArray(new String[0]);
         this.context = new SpringApplicationBuilder()
                 .sources(CryptoCypherApplication.class)
@@ -26,6 +25,7 @@ public class AppCryptoCypher extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(AppCryptoCypher.class.getResource("view/main-view.fxml"));
+        fxmlLoader.setControllerFactory(context::getBean);
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("crypto-cypher");
         stage.setScene(scene);

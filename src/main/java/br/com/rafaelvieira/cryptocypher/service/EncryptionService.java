@@ -13,12 +13,18 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 
-@Setter
-@AllArgsConstructor
 @Service
 public class EncryptionService {
 
     private CryptographyType cryptographyType;
+
+    public EncryptionService(CryptographyType cryptographyType) {
+        this.cryptographyType = cryptographyType;
+    }
+
+    public void setCryptographyType(CryptographyType cryptographyType) {
+        this.cryptographyType = cryptographyType;
+    }
 
     public EncryptionResult encryptFile(String filePath) throws IOException {
         try {

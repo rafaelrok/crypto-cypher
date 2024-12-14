@@ -14,6 +14,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.io.File;
@@ -135,6 +136,7 @@ public class FileEncryptionController implements Initializable {
 
     private EncryptionService encryptionService;
 
+    @Autowired
     public FileEncryptionController(EncryptionService encryptionService) {
         this.encryptionService = encryptionService;
     }

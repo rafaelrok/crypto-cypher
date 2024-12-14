@@ -54,12 +54,4 @@ public class StageManager {
         scene.setRoot(rootNode);
         return scene;
     }
-
-    public void setPrimaryStage(Stage stage) {
-        this.primaryStage = stage;
-    }
-
-    public void displayInitialScene() {
-        loadViewNodeHierarchy("/fxml/main.fxml");
-    }
 }
