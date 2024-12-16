@@ -1,5 +1,6 @@
 package br.com.rafaelvieira.cryptocypher.controller;
 
+import br.com.rafaelvieira.cryptocypher.domain.EncryptionResult;
 import br.com.rafaelvieira.cryptocypher.enums.CryptographyType;
 import br.com.rafaelvieira.cryptocypher.enums.ExtensionFile;
 import br.com.rafaelvieira.cryptocypher.service.EncryptionService;
@@ -204,6 +205,11 @@ public class FileEncryptionController implements Initializable {
 
     private void processText(String content, String action) {
         try {
+            if (content == null || content.trim().isEmpty()) {
+                handleError("O texto de entrada não pode estar vazio");
+                return;
+            }
+
             Platform.runLater(() -> progressBar.setProgress(0));
             int totalLength = content.length();
             int chunkSize = Math.max(1, totalLength / 100); // Evita divisão por zero
@@ -320,16 +326,25 @@ public class FileEncryptionController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Inicializa com AES por padrão
-        encryptionService = new EncryptionService(CryptographyType.AES);
+//        encryptionService = new EncryptionService(CryptographyType.AES);
 
         // Popula o ComboBox com todos os tipos de criptografia disponíveis
         algorithmComboBox.getItems().addAll(CryptographyType.values());
         algorithmComboBox.getSelectionModel().selectFirst();
 
         // Listener para mudança de algoritmo
+//        algorithmComboBox.setOnAction(event -> {
+//            CryptographyType selectedType = algorithmComboBox.getValue();
+//            encryptionService.setCryptographyType(selectedType);
+//        });
+
+        // Listener para mudança de algoritmo
         algorithmComboBox.setOnAction(event -> {
             CryptographyType selectedType = algorithmComboBox.getValue();
-            encryptionService.setCryptographyType(selectedType);
+            if (selectedType != null) {
+                System.out.println("Mudando para algoritmo: " + selectedType.name());
+                encryptionService.setCryptographyType(selectedType);
+            }
         });
 
         // Opcional: Configurar como os itens devem ser exibidos

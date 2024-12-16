@@ -10,6 +10,6 @@ public class AppConfig {
 
     @Bean
     public EncryptionService encryptionService() {
-        return new EncryptionService(CryptographyType.AES);
+        return new EncryptionService();
     }
 }
