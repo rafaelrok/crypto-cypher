@@ -13,6 +13,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 
 public class AESCipher implements CryptographyStrategy {
+
     private static SecretKey key;
     private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final int IV_LENGTH = 16;

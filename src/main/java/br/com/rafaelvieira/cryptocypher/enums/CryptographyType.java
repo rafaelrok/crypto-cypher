@@ -25,7 +25,7 @@ public enum CryptographyType {
     VIGENERE {
         @Override
         public CryptographyStrategy createStrategy() {
-            return new VigenereCipher("CHAVE"); // Defina uma chave padrão ou receba como parâmetro
+            return new VigenereCipher("key");
         }
     },
     CAESAR {
@@ -49,36 +49,11 @@ public enum CryptographyType {
 
     public abstract CryptographyStrategy createStrategy();
 
-    public String encrypt(String content) {
+    public String encrypt(String content) throws Exception {
         return createStrategy().encrypt(content);
     }
 
-    public String decrypt(String content) {
+    public String decrypt(String content) throws Exception {
         return createStrategy().decrypt(content);
     }
 }
-
-//public enum CryptographyType {
-//
-//    CAESAR(new CaesarCipher()),
-//    REVERSE(new ReverseCipher()),
-//    BASE64(new Base64Cipher()),
-//    VIGENERE(new VigenereCipher("DEFAULT_KEY")),
-//    AES(new AESCipher()),
-//    DES(new DESCipher()),
-//    RSA(new RSACipher());
-//
-//    private final CryptographyStrategy strategy;
-//
-//    CryptographyType(CryptographyStrategy strategy) {
-//        this.strategy = strategy;
-//    }
-//
-//    public String encrypt(String input) {
-//        return strategy.encrypt(input);
-//    }
-//
-//    public String decrypt(String input) {
-//        return strategy.decrypt(input);
-//    }
-//}

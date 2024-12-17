@@ -1,6 +1,5 @@
 package br.com.rafaelvieira.cryptocypher.controller;
 
-import br.com.rafaelvieira.cryptocypher.domain.EncryptionResult;
 import br.com.rafaelvieira.cryptocypher.enums.CryptographyType;
 import br.com.rafaelvieira.cryptocypher.enums.ExtensionFile;
 import br.com.rafaelvieira.cryptocypher.service.EncryptionService;
@@ -128,14 +127,14 @@ public class FileEncryptionController implements Initializable {
     @FXML
     private TextField inputTextArea;
 
-//    @FXML
-//    private ComboBox<String> algorithmComboBox;
     @FXML
     private ComboBox<CryptographyType> algorithmComboBox;
 
     private File selectedFile;
 
-    private EncryptionService encryptionService;
+    private final EncryptionService encryptionService;
+
+    private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
 
     @Autowired
     public FileEncryptionController(EncryptionService encryptionService) {
@@ -205,12 +204,13 @@ public class FileEncryptionController implements Initializable {
 
     private void processText(String content, String action) {
         try {
-            if (content == null || content.trim().isEmpty()) {
+            if (content == null || content.isEmpty()) {
                 handleError("O texto de entrada não pode estar vazio");
                 return;
             }
 
             Platform.runLater(() -> progressBar.setProgress(0));
+
             int totalLength = content.length();
             int chunkSize = Math.max(1, totalLength / 100); // Evita divisão por zero
             StringBuilder resultContent = new StringBuilder();
@@ -220,18 +220,8 @@ public class FileEncryptionController implements Initializable {
                 int end = Math.min((i + 1) * chunkSize, totalLength);
                 String chunk = content.substring(start, end);
 
-                String processedChunk;
-                try {
-                    if (ENCRYPT.equals(action)) {
-                        processedChunk = encryptionService.encrypt(chunk);
-                    } else {
-                        processedChunk = encryptionService.decrypt(chunk);
-                    }
-                    resultContent.append(processedChunk);
-                } catch (Exception e) {
-                    handleError("Erro ao " + action + " o conteúdo: " + e.getMessage());
-                    return;
-                }
+                // Concatena os pedaços e processa tudo após o loop
+                resultContent.append(chunk);
 
                 final double progress = (double) (i + 1) / Math.ceil((double) totalLength / chunkSize);
                 Platform.runLater(() -> progressBar.setProgress(progress));
@@ -245,9 +235,21 @@ public class FileEncryptionController implements Initializable {
                 }
             }
 
+            String finalResult;
+            try {
+                if (ENCRYPT.equals(action)) {
+                    finalResult = encryptionService.encrypt(resultContent.toString());
+                } else {
+                    finalResult = encryptionService.decrypt(resultContent.toString());
+                }
+            } catch (Exception e) {
+                handleError("Erro ao " + action + " o conteúdo: " + e.getMessage());
+                return;
+            }
+
             Platform.runLater(() -> {
                 progressBar.setProgress(1);
-                outputTextArea.setText(resultContent.toString());
+                outputTextArea.setText(finalResult);
                 showAlert("Processo concluído com sucesso!", Alert.AlertType.INFORMATION);
             });
 
@@ -297,7 +299,7 @@ public class FileEncryptionController implements Initializable {
             try {
                 encryptionService.exportOutput(file, outputTextArea.getText());
                 showAlert("Arquivo exportado com sucesso!", Alert.AlertType.INFORMATION);
-                outputTextArea.clear();
+                handleCleanAllInputs();
             } catch (IOException e) {
                 showAlert("Erro ao exportar arquivo: " + e.getMessage(), Alert.AlertType.ERROR);
             }
@@ -325,20 +327,9 @@ public class FileEncryptionController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Inicializa com AES por padrão
-//        encryptionService = new EncryptionService(CryptographyType.AES);
-
-        // Popula o ComboBox com todos os tipos de criptografia disponíveis
         algorithmComboBox.getItems().addAll(CryptographyType.values());
         algorithmComboBox.getSelectionModel().selectFirst();
 
-        // Listener para mudança de algoritmo
-//        algorithmComboBox.setOnAction(event -> {
-//            CryptographyType selectedType = algorithmComboBox.getValue();
-//            encryptionService.setCryptographyType(selectedType);
-//        });
-
-        // Listener para mudança de algoritmo
         algorithmComboBox.setOnAction(event -> {
             CryptographyType selectedType = algorithmComboBox.getValue();
             if (selectedType != null) {
@@ -347,7 +338,6 @@ public class FileEncryptionController implements Initializable {
             }
         });
 
-        // Opcional: Configurar como os itens devem ser exibidos
         algorithmComboBox.setConverter(new StringConverter<CryptographyType>() {
             @Override
             public String toString(CryptographyType type) {
@@ -360,131 +350,4 @@ public class FileEncryptionController implements Initializable {
             }
         });
     }
-
-//    @FXML
-//    public void handleEncryptFileUpload() {
-//        FileChooser fileChooser = new FileChooser();
-//        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Supported Files",
-//                ExtensionFile.TEXT.getExtension(), ExtensionFile.CSV.getExtension());
-//        fileChooser.getExtensionFilters().add(extFilter);
-//        selectedFile = fileChooser.showOpenDialog(new Stage());
-//
-//        if (selectedFile != null) {
-//            inputTextArea.appendText(selectedFile.getAbsolutePath());
-//        }
-//    }
-//
-//    @FXML
-//    public void handleEncryptFile() {
-//        if (selectedFile != null) {
-//            new Thread(() -> processFile(selectedFile, ENCRYPT)).start();
-//        } else {
-//            inputTextArea.appendText("No file selected for encryption.");
-//        }
-//    }
-//
-//    @FXML
-//    public void handleDecryptFile() {
-//        if (selectedFile != null) {
-//            new Thread(() -> processFile(selectedFile, DECRYPT)).start();
-//        } else {
-//            outputTextArea.appendText("No file selected for decryption.");
-//        }
-//    }
-//
-//    private void processFile(File file, String action) {
-//        try {
-//            Platform.runLater(() -> progressBar.setProgress(0));
-//            String content = new String(Files.readAllBytes(file.toPath()));
-//            int totalLength = content.length();
-//            int chunkSize = totalLength / 100; // Dividir o arquivo em 100 partes
-//            StringBuilder resultContent = new StringBuilder();
-//
-//            for (int i = 0; i < 100; i++) {
-//                int start = i * chunkSize;
-//                int end = (i == 99) ? totalLength : (i + 1) * chunkSize;
-//                String chunk = content.substring(start, end);
-//
-//                String processedChunk;
-//                if (ENCRYPT.equals(action)) {
-//                    processedChunk = encryptionService.encrypt(chunk);
-//                } else {
-//                    processedChunk = encryptionService.decrypt(chunk);
-//                }
-//
-//                resultContent.append(processedChunk);
-//
-//                // Atualizar a barra de progresso
-//                int progress = i + 1;
-//                Platform.runLater(() -> progressBar.setProgress(progress / 100.0));
-//
-//                // Simular atraso para visualização da barra de progresso
-//                try {
-//                    Thread.sleep(20); // 20 milissegundos de atraso
-//                } catch (InterruptedException e) {
-//                    Thread.currentThread().interrupt();
-//                }
-//            }
-//
-//            Platform.runLater(() -> {
-//                progressBar.setProgress(1);
-//                outputTextArea.appendText(resultContent.toString());
-//                showAlert("Processo concluído com sucesso!", Alert.AlertType.INFORMATION);
-//            });
-//        } catch (IOException e) {
-//            Platform.runLater(() -> {
-//                progressBar.setProgress(0);
-//                outputTextArea.appendText("Error during " + action + "ion: " + e.getMessage() + "\n");
-//                showAlert("Erro durante o processo: " + e.getMessage(), Alert.AlertType.ERROR);
-//            });
-//        }
-//    }
-//
-//    @FXML
-//    public void handleCopyOutput() {
-//        String output = outputTextArea.getText();
-//        javafx.scene.input.Clipboard clipboard = javafx.scene.input.Clipboard.getSystemClipboard();
-//        javafx.scene.input.ClipboardContent content = new javafx.scene.input.ClipboardContent();
-//        content.putString(output);
-//        clipboard.setContent(content);
-//
-//        outputTextArea.appendText("Output copied to clipboard.");
-//    }
-//
-//    @FXML
-//    public void handleExportOutput() {
-//        FileChooser fileChooser = new FileChooser();
-//        fileChooser.setTitle("Export Output");
-//        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
-//        File file = fileChooser.showSaveDialog(new Stage());
-//
-//        if (file != null) {
-//            try (java.io.FileWriter writer = new java.io.FileWriter(file)) {
-//                writer.write(outputTextArea.getText());
-//                outputTextArea.clear();
-//            } catch (Exception e) {
-//                outputTextArea.appendText("Failed to export output: " + e.getMessage() + "\n");
-//            }
-//        }
-//    }
-//
-//    @FXML
-//    public void handleCleanAllInputs() {
-//        inputTextArea.clear();
-//        outputTextArea.clear();
-//        algorithmComboBox.getSelectionModel().selectFirst();
-//    }
-//
-//    private void showAlert(String message, Alert.AlertType alertType) {
-//        Alert alert = new Alert(alertType, message, ButtonType.OK);
-//        alert.setHeaderText(null);
-//        alert.setTitle(alertType == Alert.AlertType.INFORMATION ? "Concluído" : "Erro");
-//        alert.showAndWait();
-//    }
-
-//    @Override
-//    public void initialize(URL location, ResourceBundle resources) {
-//        algorithmComboBox.getItems().addAll(" ", "AES", "DES", "RSA");
-//        algorithmComboBox.getSelectionModel().selectFirst();
-//    }
 }
