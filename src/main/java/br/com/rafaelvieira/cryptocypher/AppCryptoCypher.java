@@ -1,18 +1,17 @@
 package br.com.rafaelvieira.cryptocypher;
 
+import br.com.rafaelvieira.cryptocypher.config.StageManager;
+import br.com.rafaelvieira.cryptocypher.view.ViewFxml;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import java.io.IOException;
-
 public class AppCryptoCypher extends Application {
 
     private ConfigurableApplicationContext context;
+    protected StageManager stageManager;
 
     @Override
     public void init() {
@@ -22,14 +21,20 @@ public class AppCryptoCypher extends Application {
                 .run(args);
     }
 
+//    @Override
+//    public void start(Stage stage) throws IOException {
+//        FXMLLoader fxmlLoader = new FXMLLoader(AppCryptoCypher.class.getResource("view/main-view.fxml"));
+//        fxmlLoader.setControllerFactory(context::getBean);
+//        Scene scene = new Scene(fxmlLoader.load());
+//        stage.setTitle("crypto-cypher");
+//        stage.setScene(scene);
+//        stage.show();
+//    }
+
     @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(AppCryptoCypher.class.getResource("view/main-view.fxml"));
-        fxmlLoader.setControllerFactory(context::getBean);
-        Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("crypto-cypher");
-        stage.setScene(scene);
-        stage.show();
+    public void start(Stage stage) throws Exception {
+        stageManager = context.getBean(StageManager.class, stage);
+        displayInitialScene();
     }
 
     @Override
@@ -40,5 +45,9 @@ public class AppCryptoCypher extends Application {
 
     public static void main(String[] args) {
         launch();
+    }
+
+    protected void displayInitialScene() {
+        stageManager.switchScene(ViewFxml.MAIN_VIEW_FXML);
     }
 }

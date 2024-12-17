@@ -16,6 +16,7 @@ module br.com.rafaelvieira.cryptocypher {
     requires static lombok;
     requires spring.beans;
     requires spring.core;
+    requires org.slf4j;
 
     opens br.com.rafaelvieira.cryptocypher to javafx.fxml, spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.controller to javafx.fxml, spring.core, spring.beans, spring.context;

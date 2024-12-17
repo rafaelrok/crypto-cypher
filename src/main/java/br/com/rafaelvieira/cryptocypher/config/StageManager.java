@@ -1,47 +1,64 @@
 package br.com.rafaelvieira.cryptocypher.config;
 
+import br.com.rafaelvieira.cryptocypher.view.ViewFxml;
+import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
 
 @Component
 public class StageManager {
+
+    private static final Logger log = LoggerFactory.getLogger(StageManager.class);
+
     private final SpringFXMLLoader springFXMLLoader;
-    private Stage primaryStage;
+    private final Stage primaryStage;
 
-    public StageManager(SpringFXMLLoader springFXMLLoader) {
+    public StageManager(SpringFXMLLoader springFXMLLoader, Stage primaryStage) {
         this.springFXMLLoader = springFXMLLoader;
+        this.primaryStage = primaryStage;
     }
 
-    public void switchScene(String fxmlPath) {
-        Parent viewRootNodeHierarchy = loadViewNodeHierarchy(fxmlPath);
-        show(viewRootNodeHierarchy);
+    public void switchScene(final ViewFxml view) {
+        Parent viewRootNodeHierarchy = loadViewNodeHierarchy(view.getFxmlFile());
+        show(viewRootNodeHierarchy, view.getTitle());
     }
+
+//    public void switchScene(String fxmlPath) {
+//        Parent viewRootNodeHierarchy = loadViewNodeHierarchy(fxmlPath);
+//        show(viewRootNodeHierarchy);
+//    }
 
     private Parent loadViewNodeHierarchy(String fxmlFilePath) {
         Parent rootNode = null;
         try {
             rootNode = springFXMLLoader.load(fxmlFilePath);
         } catch (Exception e) {
-            e.printStackTrace();
+//            log.error("Exception occurred while trying to load the fxml file", e);
+            logAndExit("Unable to load FXML file: " + fxmlFilePath, e);
         }
         return rootNode;
     }
 
-    private void show(Parent rootNode) {
+    private void show(Parent rootNode, String title) {
         Scene scene = prepareScene(rootNode);
 
         //primaryStage.initStyle(StageStyle.TRANSPARENT);
-        primaryStage.setTitle("Crypto Cypher");
+        primaryStage.setTitle("Crypto Cipher");
         primaryStage.setScene(scene);
         primaryStage.sizeToScene();
         primaryStage.centerOnScreen();
 
         try {
             primaryStage.show();
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        } catch (Exception e) {
+//            log.error("Exception occurred while trying to show the stage", e);
+            logAndExit("Unable to show scene for title" + primaryStage.getTitle(), e);
         }
     }
 
@@ -53,5 +70,10 @@ public class StageManager {
         }
         scene.setRoot(rootNode);
         return scene;
+    }
+
+    private void logAndExit(String errorMsg, Exception exception) {
+        log.error(errorMsg, exception, exception.getCause());
+        Platform.exit();
     }
 }

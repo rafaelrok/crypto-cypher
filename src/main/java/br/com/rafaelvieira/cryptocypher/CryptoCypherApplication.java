@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(proxyBeanMethods = false)
 public class CryptoCypherApplication {
+
     public static void main(String[] args) {
         Application.launch(AppCryptoCypher.class, args);
     }

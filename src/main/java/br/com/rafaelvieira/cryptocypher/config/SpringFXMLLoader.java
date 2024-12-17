@@ -11,32 +11,19 @@ import java.util.ResourceBundle;
 @Component
 public class SpringFXMLLoader {
 
+    private final ResourceBundle resourceBundle;
     private final ApplicationContext context;
 
-    public SpringFXMLLoader(ApplicationContext context) {
+    public SpringFXMLLoader(ResourceBundle resourceBundle, ApplicationContext context) {
+        this.resourceBundle = resourceBundle;
         this.context = context;
     }
 
     public Parent load(String fxmlPath) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setControllerFactory(context::getBean);
+        loader.setResources(resourceBundle);
         loader.setLocation(getClass().getResource(fxmlPath));
         return loader.load();
     }
-
-//    private final ResourceBundle resourceBundle;
-//    private final ApplicationContext context;
-//
-//    public SpringFXMLLoader(ApplicationContext context) {
-//        this.context = context;
-//        this.resourceBundle = ResourceBundle.getBundle("Bundle");
-//    }
-//
-//    public Parent load(String fxmlPath) throws IOException {
-//        FXMLLoader loader = new FXMLLoader();
-//        loader.setControllerFactory(context::getBean);
-//        loader.setLocation(getClass().getResource(fxmlPath));
-//        loader.setResources(resourceBundle);
-//        return loader.load();
-//    }
 }
