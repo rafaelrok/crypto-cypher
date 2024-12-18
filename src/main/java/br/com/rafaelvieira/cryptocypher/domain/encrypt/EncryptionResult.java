@@ -1,4 +1,4 @@
-package br.com.rafaelvieira.cryptocypher.domain;
+package br.com.rafaelvieira.cryptocypher.domain.encrypt;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

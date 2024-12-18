@@ -29,17 +29,11 @@ public class StageManager {
         show(viewRootNodeHierarchy, view.getTitle());
     }
 
-//    public void switchScene(String fxmlPath) {
-//        Parent viewRootNodeHierarchy = loadViewNodeHierarchy(fxmlPath);
-//        show(viewRootNodeHierarchy);
-//    }
-
     private Parent loadViewNodeHierarchy(String fxmlFilePath) {
         Parent rootNode = null;
         try {
             rootNode = springFXMLLoader.load(fxmlFilePath);
         } catch (Exception e) {
-//            log.error("Exception occurred while trying to load the fxml file", e);
             logAndExit("Unable to load FXML file: " + fxmlFilePath, e);
         }
         return rootNode;
@@ -57,7 +51,6 @@ public class StageManager {
         try {
             primaryStage.show();
         } catch (Exception e) {
-//            log.error("Exception occurred while trying to show the stage", e);
             logAndExit("Unable to show scene for title" + primaryStage.getTitle(), e);
         }
     }
