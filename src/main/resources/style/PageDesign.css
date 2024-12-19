@@ -68,3 +68,23 @@
 .btn-3:hover{
     -fx-background-color: linear-gradient(to bottom right, #bf0d3c, #9d1022);
 }
+
+/* Adicione estas classes ao seu arquivo PageDesign.css */
+
+.progress-bar {
+    -fx-accent: #188ba7;
+}
+
+.progress-bar .track {
+    -fx-background-color: #e0e0e0;
+}
+
+.progress-bar .bar {
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+.splash-background {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 0);
+}

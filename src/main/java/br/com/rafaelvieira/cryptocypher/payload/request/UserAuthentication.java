@@ -12,7 +12,7 @@ public class UserAuthentication {
 
     @Email
     @NotBlank
-    private String emial;
+    private String username;
 
     @NotBlank
     private String password;

@@ -5,6 +5,7 @@ import br.com.rafaelvieira.cryptocypher.view.ViewFxml;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -33,6 +34,7 @@ public class AppCryptoCypher extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        stage.initStyle(StageStyle.UNDECORATED);
         stageManager = context.getBean(StageManager.class, stage);
         displayInitialScene();
     }
@@ -48,6 +50,6 @@ public class AppCryptoCypher extends Application {
     }
 
     protected void displayInitialScene() {
-        stageManager.switchScene(ViewFxml.MAIN_VIEW_FXML);
+        stageManager.switchScene(ViewFxml.SPLASH_VIEW_FXML);
     }
 }

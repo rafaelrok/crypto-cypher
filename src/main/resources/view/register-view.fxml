@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="br.com.rafaelvieira.cryptocypher.controller.RegisterController"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+    </padding>
+
+    <Label text="Register" style="-fx-font-size: 24px;"/>
+
+    <TextField fx:id="usernameField" promptText="Username"/>
+    <TextField fx:id="fullNameField" promptText="Full Name"/>
+    <TextField fx:id="emailField" promptText="Email"/>
+    <PasswordField fx:id="passwordField" promptText="Password"/>
+    <PasswordField fx:id="confirmPasswordField" promptText="Confirm Password"/>
+
+    <Button text="Register" onAction="#handleRegister"/>
+
+    <Label fx:id="messageLabel"/>
+
+    <Hyperlink text="Already have an account? Login" onAction="#switchToLogin"/>
+
+</AnchorPane>

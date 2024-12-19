@@ -32,11 +32,12 @@ module br.com.rafaelvieira.cryptocypher {
     requires jakarta.servlet;
     requires jjwt.api;
     requires okhttp3;
-
+    requires spring.context.support;
+    requires jakarta.transaction;
 
     opens br.com.rafaelvieira.cryptocypher to javafx.fxml, spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.controller to javafx.fxml, spring.core, spring.beans, spring.context;
-    opens br.com.rafaelvieira.cryptocypher.domain to com.fasterxml.jackson.databind, spring.core;
+//    opens br.com.rafaelvieira.cryptocypher.domain to com.fasterxml.jackson.databind, spring.core;
     opens br.com.rafaelvieira.cryptocypher.config to spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.service to spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.service.impl to spring.core, spring.beans, spring.context;
@@ -48,7 +49,12 @@ module br.com.rafaelvieira.cryptocypher {
     exports br.com.rafaelvieira.cryptocypher.service.impl;
     exports br.com.rafaelvieira.cryptocypher.config;
     exports br.com.rafaelvieira.cryptocypher.util;
+    exports br.com.rafaelvieira.cryptocypher.security;
+    exports br.com.rafaelvieira.cryptocypher.mapper;
     exports br.com.rafaelvieira.cryptocypher.enums;
+    exports br.com.rafaelvieira.cryptocypher.logging;
+    exports br.com.rafaelvieira.cryptocypher.security.jwt;
+    exports br.com.rafaelvieira.cryptocypher.view;
     exports br.com.rafaelvieira.cryptocypher.domain.user;
     opens br.com.rafaelvieira.cryptocypher.domain.user to com.fasterxml.jackson.databind, spring.core;
     exports br.com.rafaelvieira.cryptocypher.domain.encrypt;
@@ -57,4 +63,8 @@ module br.com.rafaelvieira.cryptocypher {
     opens br.com.rafaelvieira.cryptocypher.domain.role to com.fasterxml.jackson.databind, spring.core;
     exports br.com.rafaelvieira.cryptocypher.payload;
     opens br.com.rafaelvieira.cryptocypher.payload to com.fasterxml.jackson.databind, spring.core;
+    exports br.com.rafaelvieira.cryptocypher.payload.request;
+    opens br.com.rafaelvieira.cryptocypher.payload.request to com.fasterxml.jackson.databind, spring.core;
+    exports br.com.rafaelvieira.cryptocypher.payload.response;
+    opens br.com.rafaelvieira.cryptocypher.payload.response to com.fasterxml.jackson.databind, spring.core;
 }

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+           prefHeight="400.0" prefWidth="600.0" styleClass="white-bg"
+           stylesheets="@../style/PageDesign.css"
+           xmlns="http://javafx.com/javafx/11.0.14-internal"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="br.com.rafaelvieira.cryptocypher.controller.SplashController">
+
+    <AnchorPane prefHeight="400.0" prefWidth="600.0">
+        <children>
+            <!-- Logo ou título principal -->
+            <Label layoutX="150.0" layoutY="100.0" text="CryptoCypher" textFill="#188ba7">
+                <font>
+                    <Font name="Tahoma" size="40.0"/>
+                </font>
+            </Label>
+
+            <!-- Subtítulo ou descrição -->
+            <Label layoutX="200.0" layoutY="160.0" text="Secure Encryption System" textFill="#666666">
+                <font>
+                    <Font name="Tahoma" size="20.0"/>
+                </font>
+            </Label>
+
+            <!-- Barra de progresso -->
+            <ProgressBar fx:id="progressBar" layoutX="150.0" layoutY="250.0"
+                         prefWidth="300.0" progress="0.0" styleClass="progress-bar"/>
+
+            <!-- Label para status do carregamento -->
+            <Label fx:id="statusLabel" layoutX="150.0" layoutY="280.0" text="Carregando..." textFill="#666666">
+                <font>
+                    <Font name="Tahoma" size="14.0"/>
+                </font>
+            </Label>
+
+            <!-- Versão do sistema -->
+            <Label layoutX="260.0" layoutY="350.0" text="Version 1.0" textFill="#999999">
+                <font>
+                    <Font name="Tahoma" size="12.0"/>
+                </font>
+            </Label>
+        </children>
+    </AnchorPane>
+</StackPane>
