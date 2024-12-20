@@ -1,6 +1,6 @@
 package br.com.rafaelvieira.cryptocypher.service.impl;
 
-import br.com.rafaelvieira.cryptocypher.domain.user.User;
+import br.com.rafaelvieira.cryptocypher.model.user.User;
 import br.com.rafaelvieira.cryptocypher.repository.UserRepository;
 import br.com.rafaelvieira.cryptocypher.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;

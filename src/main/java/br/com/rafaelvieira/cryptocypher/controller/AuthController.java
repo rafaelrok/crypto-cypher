@@ -158,10 +158,7 @@ public class AuthController implements Initializable {
                     login_password.getText() :
                     login_showPassword.getText();
 
-            UserAuthentication loginRequest = UserAuthentication.builder()
-                    .username(username)
-                    .password(password)
-                    .build();
+            UserAuthentication loginRequest = new UserAuthentication(username, password);
 
             JwtResponse response = authService.authenticateUser(loginRequest);
 
@@ -372,7 +369,7 @@ public class AuthController implements Initializable {
 //package br.com.rafaelvieira.cryptocypher.controller;
 //
 //
-//import br.com.rafaelvieira.cryptocypher.domain.user.User;
+//import br.com.rafaelvieira.cryptocypher.model.user.User;
 //import br.com.rafaelvieira.cryptocypher.payload.request.UserAuthentication;
 //import br.com.rafaelvieira.cryptocypher.payload.request.UserRegister;
 //import br.com.rafaelvieira.cryptocypher.payload.response.JwtResponse;

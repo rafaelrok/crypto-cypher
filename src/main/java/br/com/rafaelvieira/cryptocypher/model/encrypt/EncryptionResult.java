@@ -1,11 +1,8 @@
-package br.com.rafaelvieira.cryptocypher.domain.encrypt;
+package br.com.rafaelvieira.cryptocypher.model.encrypt;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
 
-@Setter
-@Getter
+
 public class EncryptionResult {
 
     @JsonProperty("content")
@@ -17,5 +14,17 @@ public class EncryptionResult {
     public EncryptionResult(String content, String filePath) {
         this.content = content;
         this.filePath = filePath;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getFilePath() {
+        return filePath;
     }
 }

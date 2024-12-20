@@ -7,8 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import br.com.rafaelvieira.cryptocypher.domain.user.User;
-import lombok.Getter;
+import br.com.rafaelvieira.cryptocypher.model.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,10 +19,8 @@ public class UserDetailsImpl implements UserDetails {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Getter
     private final Long id;
     private final String username;
-    @Getter
     private final String email;
 
     @JsonIgnore
@@ -51,6 +48,18 @@ public class UserDetailsImpl implements UserDetails {
                 user.getEmail(),
                 user.getPassword(),
                 authorities);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override

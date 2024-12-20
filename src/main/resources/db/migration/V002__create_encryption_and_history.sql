@@ -1,4 +1,4 @@
-CREATE TABLE encryption
+CREATE TABLE IF NOT EXISTS encryption
 (
     id         BIGINT AUTO_INCREMENT NOT NULL,
     type       VARCHAR(50)          NULL,
@@ -9,7 +9,7 @@ CREATE TABLE encryption
     CONSTRAINT pk_encryption PRIMARY KEY (id)
 );
 
-CREATE TABLE encryption_history
+CREATE TABLE IF NOT EXISTS encryption_history
 (
     id            BIGINT AUTO_INCREMENT NOT NULL,
     user_id       BIGINT                NULL,

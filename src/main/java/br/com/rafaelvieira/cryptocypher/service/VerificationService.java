@@ -1,7 +1,8 @@
 package br.com.rafaelvieira.cryptocypher.service;
 
-import br.com.rafaelvieira.cryptocypher.domain.user.User;
+import br.com.rafaelvieira.cryptocypher.model.user.User;
 import br.com.rafaelvieira.cryptocypher.repository.UserRepository;
+import jakarta.mail.MessagingException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +34,7 @@ public class VerificationService {
     }
 
     @Transactional
-    public void resendVerificationCode(String email) {
+    public void resendVerificationCode(String email) throws MessagingException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

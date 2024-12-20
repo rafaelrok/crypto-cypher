@@ -1,7 +1,7 @@
 package br.com.rafaelvieira.cryptocypher.service;
 
-import br.com.rafaelvieira.cryptocypher.domain.role.Role;
-import br.com.rafaelvieira.cryptocypher.domain.user.User;
+import br.com.rafaelvieira.cryptocypher.model.role.Role;
+import br.com.rafaelvieira.cryptocypher.model.user.User;
 import br.com.rafaelvieira.cryptocypher.enums.ERole;
 import br.com.rafaelvieira.cryptocypher.payload.request.UserAuthentication;
 import br.com.rafaelvieira.cryptocypher.payload.request.UserRegister;
@@ -10,8 +10,8 @@ import br.com.rafaelvieira.cryptocypher.repository.RoleRepository;
 import br.com.rafaelvieira.cryptocypher.repository.UserRepository;
 import br.com.rafaelvieira.cryptocypher.security.UserDetailsImpl;
 import br.com.rafaelvieira.cryptocypher.security.jwt.JwtUtils;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
@@ -37,6 +36,22 @@ public class AuthService {
     private final JwtUtils jwtUtils;
     private final VerificationService verificationService;
     private final EmailService emailService;
+
+    public AuthService(AuthenticationManager authenticationManager,
+                       UserRepository userRepository,
+                       RoleRepository roleRepository,
+                       PasswordEncoder passwordEncoder,
+                       JwtUtils jwtUtils,
+                       VerificationService verificationService,
+                       EmailService emailService) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtils = jwtUtils;
+        this.verificationService = verificationService;
+        this.emailService = emailService;
+    }
 
     @Transactional
     public JwtResponse authenticateUser(UserAuthentication userAuthentication) {
@@ -61,19 +76,29 @@ public class AuthService {
             throw new RuntimeException("Please verify your email first");
         }
 
-        return JwtResponse.builder()
-                .token(jwtCookie.getValue()) // Pegamos o valor do cookie
-                .tokenCookie(jwtCookie)      // Adicionamos o cookie completo
-                .id(userDetails.getId())
-                .username(userDetails.getUsername())
-                .email(userDetails.getEmail())
-                .roles(roles)
-                .isFirstAccess(user.isFirstAccess())
-                .build();
+        JwtResponse jwtResponse = new JwtResponse();
+        jwtResponse.setToken(jwtCookie.getValue());
+        jwtResponse.setTokenCookie(jwtCookie);
+        jwtResponse.setId(userDetails.getId());
+        jwtResponse.setUsername(userDetails.getUsername());
+        jwtResponse.setEmail(userDetails.getEmail());
+        jwtResponse.setRoles(roles);
+        jwtResponse.setFirstAccess(user.isFirstAccess());
+        return jwtResponse;
+
+//        return JwtResponse.builder()
+//                .token(jwtCookie.getValue()) // Pegamos o valor do cookie
+//                .tokenCookie(jwtCookie)      // Adicionamos o cookie completo
+//                .id(userDetails.getId())
+//                .username(userDetails.getUsername())
+//                .email(userDetails.getEmail())
+//                .roles(roles)
+//                .isFirstAccess(user.isFirstAccess())
+//                .build();
     }
 
     @Transactional
-    public void registerUser(UserRegister userRegister) {
+    public void registerUser(UserRegister userRegister) throws MessagingException {
         if (userRepository.existsByUsername(userRegister.getUsername())) {
             throw new RuntimeException("Username is already taken!");
         }
@@ -86,16 +111,15 @@ public class AuthService {
         String verificationCode = verificationService.generateVerificationCode();
 
         // Create new user
-        User user = User.builder()
-                .username(userRegister.getUsername())
-                .email(userRegister.getEmail())
-                .password(passwordEncoder.encode(userRegister.getPassword()))
-                .fullName(userRegister.getFullName())
-                .isVerified(false)
-                .isFirstAccess(true)
-                .verificationCode(verificationCode)
-                .roles(getRoles(userRegister.getRoles()))
-                .build();
+        User user = new User(
+                userRegister.getUsername(),
+                userRegister.getEmail(),
+                passwordEncoder.encode(userRegister.getPassword()),
+                false,
+                true,
+                verificationCode,
+                getRoles(userRegister.getRoles())
+        );
 
         userRepository.save(user);
 
@@ -114,7 +138,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void initiatePasswordReset(String email) {
+    public void initiatePasswordReset(String email) throws MessagingException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

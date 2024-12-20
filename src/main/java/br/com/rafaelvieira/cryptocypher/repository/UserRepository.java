@@ -2,7 +2,7 @@ package br.com.rafaelvieira.cryptocypher.repository;
 
 import java.util.Optional;
 
-import br.com.rafaelvieira.cryptocypher.domain.user.User;
+import br.com.rafaelvieira.cryptocypher.model.user.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

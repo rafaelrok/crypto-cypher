@@ -1,18 +1,11 @@
-CREATE TABLE roles
+CREATE TABLE IF NOT EXISTS roles
 (
     id   INT AUTO_INCREMENT NOT NULL,
     name VARCHAR(20) NULL,
     CONSTRAINT pk_roles PRIMARY KEY (id)
 );
 
-CREATE TABLE user_roles
-(
-    role_id INT    NOT NULL,
-    user_id BIGINT NOT NULL,
-    CONSTRAINT pk_user_roles PRIMARY KEY (role_id, user_id)
-);
-
-CREATE TABLE users
+CREATE TABLE IF NOT EXISTS users
 (
     id                BIGINT AUTO_INCREMENT NOT NULL,
     username          VARCHAR(20)           NULL,
@@ -38,3 +31,10 @@ ALTER TABLE user_roles
 
 ALTER TABLE user_roles
     ADD CONSTRAINT fk_userol_on_user FOREIGN KEY (user_id) REFERENCES users (id);
+
+CREATE TABLE IF NOT EXISTS user_roles
+(
+    role_id INT    NOT NULL,
+    user_id BIGINT NOT NULL,
+    CONSTRAINT pk_user_roles PRIMARY KEY (role_id, user_id)
+);

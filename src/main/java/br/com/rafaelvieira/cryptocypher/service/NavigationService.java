@@ -7,12 +7,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import lombok.Setter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-@Setter
+
 @Service
 public class NavigationService {
 
@@ -47,6 +47,14 @@ public class NavigationService {
     public void navigateToResetPassword() {
         loadScene(ViewFxml.RESET_PASSWORD_VIEW_FXML.getFxmlFile());
 //        loadScene("reset-password-view.fxml");
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
     }
 
     /**

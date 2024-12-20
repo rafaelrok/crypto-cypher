@@ -70,10 +70,9 @@
         </dependency>
         <!-- MySQL -->
         <dependency>
-            <groupId>com.mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>9.1.0</version>
-            <scope>runtime</scope>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
         </dependency>
         <dependency>
             <groupId>jakarta.enterprise</groupId>
@@ -229,13 +228,6 @@
             <version>17.0.6</version>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-            <version>1.18.36</version>
-<!--            <scope>provided</scope>-->
-        </dependency>
-        <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
             <version>4.9.3</version>
@@ -261,6 +253,7 @@
                 <configuration>
                     <source>17</source>
                     <target>17</target>
+                    <encoding>UTF-8</encoding>
                     <compilerArgs>
                         <arg>--add-opens</arg>
                         <arg>br.com.rafaelvieira.cryptocypher/br.com.rafaelvieira.cryptocypher=ALL-UNNAMED</arg>
@@ -288,6 +281,29 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <configuration>
+                    <url>jdbc:mysql://localhost:3308/crypto_cipher?useTimezone=true&amp;serverTimezone=UTC&amp;useSSL=false</url>
+                    <user>root</user>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <password>123456</password>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>8.0.33</version>
+                        <exclusions>
+                            <exclusion>
+                                <artifactId>slf4j-api</artifactId>
+                                <groupId>org.slf4j</groupId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

@@ -1,6 +1,6 @@
 package br.com.rafaelvieira.cryptocypher.controller;
 
-import br.com.rafaelvieira.cryptocypher.domain.user.User;
+import br.com.rafaelvieira.cryptocypher.model.user.User;
 import br.com.rafaelvieira.cryptocypher.payload.request.UserRegister;
 import br.com.rafaelvieira.cryptocypher.repository.UserRepository;
 import br.com.rafaelvieira.cryptocypher.service.AuthService;
@@ -58,12 +58,17 @@ public class RegisterController implements Initializable {
             return;
         }
 
-        UserRegister request = UserRegister.builder()
-                .username(usernameField.getText())
-                .fullName(fullNameField.getText())
-                .email(emailField.getText())
-                .password(passwordField.getText())
-                .build();
+        UserRegister request = new UserRegister(
+                usernameField.getText(),
+                fullNameField.getText(),
+                emailField.getText(),
+                passwordField.getText()
+        );
+//                .username(usernameField.getText())
+//                .fullName(fullNameField.getText())
+//                .email(emailField.getText())
+//                .password(passwordField.getText())
+//                .build();
 
         try {
             authService.registerUser(request);

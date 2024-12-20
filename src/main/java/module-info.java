@@ -13,7 +13,6 @@ module br.com.rafaelvieira.cryptocypher {
     requires spring.boot.autoconfigure;
     requires spring.context;
     requires spring.boot;
-    requires static lombok;
     requires spring.beans;
     requires spring.core;
     requires org.slf4j;
@@ -34,10 +33,10 @@ module br.com.rafaelvieira.cryptocypher {
     requires okhttp3;
     requires spring.context.support;
     requires jakarta.transaction;
+    requires jakarta.mail;
 
     opens br.com.rafaelvieira.cryptocypher to javafx.fxml, spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.controller to javafx.fxml, spring.core, spring.beans, spring.context;
-//    opens br.com.rafaelvieira.cryptocypher.domain to com.fasterxml.jackson.databind, spring.core;
     opens br.com.rafaelvieira.cryptocypher.config to spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.service to spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.service.impl to spring.core, spring.beans, spring.context;
@@ -55,16 +54,17 @@ module br.com.rafaelvieira.cryptocypher {
     exports br.com.rafaelvieira.cryptocypher.logging;
     exports br.com.rafaelvieira.cryptocypher.security.jwt;
     exports br.com.rafaelvieira.cryptocypher.view;
-    exports br.com.rafaelvieira.cryptocypher.domain.user;
-    opens br.com.rafaelvieira.cryptocypher.domain.user to com.fasterxml.jackson.databind, spring.core;
-    exports br.com.rafaelvieira.cryptocypher.domain.encrypt;
-    opens br.com.rafaelvieira.cryptocypher.domain.encrypt to com.fasterxml.jackson.databind, spring.core;
-    exports br.com.rafaelvieira.cryptocypher.domain.role;
-    opens br.com.rafaelvieira.cryptocypher.domain.role to com.fasterxml.jackson.databind, spring.core;
+
+    exports br.com.rafaelvieira.cryptocypher.model.user;
+    opens br.com.rafaelvieira.cryptocypher.model.user to com.fasterxml.jackson.databind, spring.core, org.hibernate.orm.core;
+    exports br.com.rafaelvieira.cryptocypher.model.encrypt;
+    opens br.com.rafaelvieira.cryptocypher.model.encrypt to com.fasterxml.jackson.databind, spring.core, org.hibernate.orm.core;
+    exports br.com.rafaelvieira.cryptocypher.model.role;
+    opens br.com.rafaelvieira.cryptocypher.model.role to com.fasterxml.jackson.databind, spring.core, org.hibernate.orm.core;
     exports br.com.rafaelvieira.cryptocypher.payload;
-    opens br.com.rafaelvieira.cryptocypher.payload to com.fasterxml.jackson.databind, spring.core;
+    opens br.com.rafaelvieira.cryptocypher.payload to com.fasterxml.jackson.databind, spring.core, org.hibernate.orm.core;
     exports br.com.rafaelvieira.cryptocypher.payload.request;
-    opens br.com.rafaelvieira.cryptocypher.payload.request to com.fasterxml.jackson.databind, spring.core;
+    opens br.com.rafaelvieira.cryptocypher.payload.request to com.fasterxml.jackson.databind, spring.core, org.hibernate.orm.core;
     exports br.com.rafaelvieira.cryptocypher.payload.response;
-    opens br.com.rafaelvieira.cryptocypher.payload.response to com.fasterxml.jackson.databind, spring.core;
+    opens br.com.rafaelvieira.cryptocypher.payload.response to com.fasterxml.jackson.databind, spring.core, org.hibernate.orm.core;
 }

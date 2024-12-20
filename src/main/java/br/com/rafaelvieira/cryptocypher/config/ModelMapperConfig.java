@@ -1,5 +1,6 @@
 package br.com.rafaelvieira.cryptocypher.config;
 
+import br.com.rafaelvieira.cryptocypher.payload.request.UserUpdate;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
@@ -12,13 +13,6 @@ public class ModelMapperConfig {
     public ModelMapper modelMapper() {
         var modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
-
-
-//        var updateUserTypeMap = modelMapper.createTypeMap(UserUpdate.class, User.class);
-//        updateUserTypeMap.<String>addMapping(UserUpdate::getBio, (destination, value) -> destination.getProfile().setBio(value));
-//        updateUserTypeMap.<String>addMapping(UserUpdate::getImage, (destination, value) -> destination.getProfile().setImage(value));
-//        updateUserTypeMap.<String>addMapping(UserUpdate::getUsername, (destination, value) -> destination.getProfile().setUsername(value));
-
 
         return modelMapper;
     }

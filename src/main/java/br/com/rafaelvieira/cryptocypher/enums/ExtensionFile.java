@@ -1,8 +1,5 @@
 package br.com.rafaelvieira.cryptocypher.enums;
 
-import lombok.Getter;
-
-@Getter
 public enum ExtensionFile {
 
     TEXT("*.txt"),
@@ -14,6 +11,10 @@ public enum ExtensionFile {
     CSV("*.csv");
 
     private final String extension;
+
+    public String getExtension() {
+        return extension;
+    }
 
     ExtensionFile(String extension) {
         this.extension = extension;
