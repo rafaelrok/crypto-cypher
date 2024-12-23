@@ -14,13 +14,17 @@ import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,119 +32,164 @@ import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
-
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtils jwtUtils;
     private final VerificationService verificationService;
     private final EmailService emailService;
 
-    public AuthService(AuthenticationManager authenticationManager,
-                       UserRepository userRepository,
-                       RoleRepository roleRepository,
-                       PasswordEncoder passwordEncoder,
-                       JwtUtils jwtUtils,
-                       VerificationService verificationService,
-                       EmailService emailService) {
+    // Objeto para armazenar o usuário autenticado na sessão
+    private UserSession currentSession;
+
+    public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder, VerificationService verificationService, EmailService emailService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtUtils = jwtUtils;
         this.verificationService = verificationService;
         this.emailService = emailService;
     }
 
-    @Transactional
-    public JwtResponse authenticateUser(UserAuthentication userAuthentication) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userAuthentication.getUsername(), userAuthentication.getPassword()));
+    public class UserSession {
+        private Long id;
+        private String username;
+        private String email;
+        private List<String> roles;
+        private boolean firstAccess;
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
-        // Gera o cookie JWT
-        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
-
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
-        User user = userRepository.findByUsername(userDetails.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (!user.isVerified()) {
-            throw new RuntimeException("Please verify your email first");
+        public Long getId() {
+            return id;
         }
 
-        JwtResponse jwtResponse = new JwtResponse();
-        jwtResponse.setToken(jwtCookie.getValue());
-        jwtResponse.setTokenCookie(jwtCookie);
-        jwtResponse.setId(userDetails.getId());
-        jwtResponse.setUsername(userDetails.getUsername());
-        jwtResponse.setEmail(userDetails.getEmail());
-        jwtResponse.setRoles(roles);
-        jwtResponse.setFirstAccess(user.isFirstAccess());
-        return jwtResponse;
+        public void setId(Long id) {
+            this.id = id;
+        }
 
-//        return JwtResponse.builder()
-//                .token(jwtCookie.getValue()) // Pegamos o valor do cookie
-//                .tokenCookie(jwtCookie)      // Adicionamos o cookie completo
-//                .id(userDetails.getId())
-//                .username(userDetails.getUsername())
-//                .email(userDetails.getEmail())
-//                .roles(roles)
-//                .isFirstAccess(user.isFirstAccess())
-//                .build();
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public List<String> getRoles() {
+            return roles;
+        }
+
+        public void setRoles(List<String> roles) {
+            this.roles = roles;
+        }
+
+        public boolean isFirstAccess() {
+            return firstAccess;
+        }
+
+        public void setFirstAccess(boolean firstAccess) {
+            this.firstAccess = firstAccess;
+        }
+    }
+
+
+
+    public UserSession authenticateUser(String username, String password) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password)
+            );
+
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            User user = userRepository.findByUsername(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+
+            // Criar e armazenar a sessão do usuário
+            currentSession = new UserSession();
+            currentSession.setId(userDetails.getId());
+            currentSession.setUsername(userDetails.getUsername());
+            currentSession.setEmail(userDetails.getEmail());
+            currentSession.setRoles(roles);
+            currentSession.setFirstAccess(user.isFirstAccess());
+
+            return currentSession;
+
+        } catch (DisabledException e) {
+            throw new RuntimeException("Por favor, verifique seu email primeiro");
+        } catch (BadCredentialsException e) {
+            throw new RuntimeException("Senha inválida");
+        } catch (AuthenticationException e) {
+            throw new RuntimeException("Usuário não encontrado");
+        }
+    }
+
+    public void logout() {
+        SecurityContextHolder.clearContext();
+        currentSession = null;
     }
 
     @Transactional
     public void registerUser(UserRegister userRegister) throws MessagingException {
         if (userRepository.existsByUsername(userRegister.getUsername())) {
-            throw new RuntimeException("Username is already taken!");
+            throw new RuntimeException("Username já está em uso");
         }
 
         if (userRepository.existsByEmail(userRegister.getEmail())) {
-            throw new RuntimeException("Email is already in use!");
+            throw new RuntimeException("Email já está em uso");
         }
 
-        // Create verification code
+        User user = new User();
+        user.setUsername(userRegister.getUsername());
+        user.setFullName(userRegister.getFullName());
+        user.setEmail(userRegister.getEmail());
+        user.setPassword(passwordEncoder.encode(userRegister.getPassword()));
+        user.setVerified(false);
+        user.setFirstAccess(true);
+
+        // Adicionar role padrão
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Role não encontrada"));
+        user.setRoles(Collections.singleton(userRole));
+
+        // Gerar e enviar código de verificação
         String verificationCode = verificationService.generateVerificationCode();
-
-        // Create new user
-        User user = new User(
-                userRegister.getUsername(),
-                userRegister.getEmail(),
-                passwordEncoder.encode(userRegister.getPassword()),
-                false,
-                true,
-                verificationCode,
-                getRoles(userRegister.getRoles())
-        );
-
+        user.setVerificationCode(verificationCode);
         userRepository.save(user);
 
-        // Send verification email
-        emailService.sendVerificationEmail(user.getEmail(), verificationCode);
+        emailService.sendVerificationEmail(userRegister.getEmail(), verificationCode);
     }
 
-    @Transactional
-    public void resetPassword(String email, String newPassword) {
+    public void verifyEmail(String email, String code) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        user.setPassword(passwordEncoder.encode(newPassword));
+        if (user.isVerified()) {
+            throw new RuntimeException("Email já foi verificado");
+        }
+
+        if (!user.getVerificationCode().equals(code)) {
+            throw new RuntimeException("Código de verificação inválido");
+        }
+
+        user.setVerified(true);
         user.setVerificationCode(null);
         userRepository.save(user);
     }
 
-    @Transactional
-    public void initiatePasswordReset(String email) throws MessagingException {
+    public void requestPasswordReset(String email) throws MessagingException {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         String resetCode = verificationService.generateVerificationCode();
         user.setVerificationCode(resetCode);
@@ -149,59 +198,194 @@ public class AuthService {
         emailService.sendPasswordResetEmail(email, resetCode);
     }
 
-    private Set<Role> getRoles(Set<String> strRoles) {
-        Set<Role> roles = new HashSet<>();
+    public void resetPassword(String email, String code, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        if (strRoles == null || strRoles.isEmpty()) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role USER is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role.toLowerCase()) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role ADMIN is not found."));
-                        roles.add(adminRole);
-                        break;
-                    case "mod":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role MODERATOR is not found."));
-                        roles.add(modRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role USER is not found."));
-                        roles.add(userRole);
-                }
-            });
+        if (!user.getPassword().equals(code)) {
+            throw new RuntimeException("Código de reset inválido");
         }
 
-        return roles;
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setVerificationCode(null);
+        userRepository.save(user);
     }
 
-    public boolean validateToken(String token) {
-        return jwtUtils.validateJwtToken(token);
+    public UserSession getCurrentSession() {
+        return currentSession;
     }
 
-    public String getUsernameFromToken(String token) {
-        return jwtUtils.getUserNameFromJwtToken(token);
-    }
-
-    public void logout() {
-        SecurityContextHolder.clearContext();
-    }
-
-    @Transactional
-    public void verifyEmailAndCompleteRegistration(String email, String code) {
-        if (verificationService.verifyUser(email, code)) {
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            user.setVerified(true);
-            user.setVerificationCode(null);
-            userRepository.save(user);
-        } else {
-            throw new RuntimeException("Invalid verification code");
-        }
+    public boolean isAuthenticated() {
+        return currentSession != null;
     }
 }
+
+//@Service
+//public class AuthService {
+//
+//    private final AuthenticationManager authenticationManager;
+//    private final UserRepository userRepository;
+//    private final RoleRepository roleRepository;
+//    private final PasswordEncoder passwordEncoder;
+//    private final JwtUtils jwtUtils;
+//    private final VerificationService verificationService;
+//    private final EmailService emailService;
+//
+//    public AuthService(AuthenticationManager authenticationManager,
+//                       UserRepository userRepository,
+//                       RoleRepository roleRepository,
+//                       PasswordEncoder passwordEncoder,
+//                       JwtUtils jwtUtils,
+//                       VerificationService verificationService,
+//                       EmailService emailService) {
+//        this.authenticationManager = authenticationManager;
+//        this.userRepository = userRepository;
+//        this.roleRepository = roleRepository;
+//        this.passwordEncoder = passwordEncoder;
+//        this.jwtUtils = jwtUtils;
+//        this.verificationService = verificationService;
+//        this.emailService = emailService;
+//    }
+//
+//    @Transactional
+//    public JwtResponse authenticateUser(UserAuthentication userAuthentication) {
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(userAuthentication.getUsername(), userAuthentication.getPassword()));
+//
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+//
+//        // Gera o cookie JWT
+//        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+//
+//        List<String> roles = userDetails.getAuthorities().stream()
+//                .map(GrantedAuthority::getAuthority)
+//                .collect(Collectors.toList());
+//
+//        User user = userRepository.findByUsername(userDetails.getUsername())
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        if (!user.isVerified()) {
+//            throw new RuntimeException("Please verify your email first");
+//        }
+//
+//        JwtResponse jwtResponse = new JwtResponse();
+//        jwtResponse.setToken(jwtCookie.getValue());
+//        jwtResponse.setTokenCookie(jwtCookie);
+//        jwtResponse.setId(userDetails.getId());
+//        jwtResponse.setUsername(userDetails.getUsername());
+//        jwtResponse.setEmail(userDetails.getEmail());
+//        jwtResponse.setRoles(roles);
+//        jwtResponse.setFirstAccess(user.isFirstAccess());
+//        return jwtResponse;
+//    }
+//
+//    @Transactional
+//    public void registerUser(UserRegister userRegister) throws MessagingException {
+//        if (userRepository.existsByUsername(userRegister.getUsername())) {
+//            throw new RuntimeException("Username is already taken!");
+//        }
+//
+//        if (userRepository.existsByEmail(userRegister.getEmail())) {
+//            throw new RuntimeException("Email is already in use!");
+//        }
+//
+//        // Create verification code
+//        String verificationCode = verificationService.generateVerificationCode();
+//
+//        // Create new user
+//        User user = new User(
+//                userRegister.getUsername(),
+//                userRegister.getEmail(),
+//                passwordEncoder.encode(userRegister.getPassword()),
+//                false,
+//                true,
+//                verificationCode,
+//                getRoles(userRegister.getRoles())
+//        );
+//
+//        userRepository.save(user);
+//
+//        // Send verification email
+//        emailService.sendVerificationEmail(user.getEmail(), verificationCode);
+//    }
+//
+//    @Transactional
+//    public void resetPassword(String email, String newPassword) {
+//        User user = userRepository.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        user.setPassword(passwordEncoder.encode(newPassword));
+//        user.setVerificationCode(null);
+//        userRepository.save(user);
+//    }
+//
+//    @Transactional
+//    public void initiatePasswordReset(String email) throws MessagingException {
+//        User user = userRepository.findByEmail(email)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        String resetCode = verificationService.generateVerificationCode();
+//        user.setVerificationCode(resetCode);
+//        userRepository.save(user);
+//
+//        emailService.sendPasswordResetEmail(email, resetCode);
+//    }
+//
+//    private Set<Role> getRoles(Set<String> strRoles) {
+//        Set<Role> roles = new HashSet<>();
+//
+//        if (strRoles == null || strRoles.isEmpty()) {
+//            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+//                    .orElseThrow(() -> new RuntimeException("Error: Role USER is not found."));
+//            roles.add(userRole);
+//        } else {
+//            strRoles.forEach(role -> {
+//                switch (role.toLowerCase()) {
+//                    case "admin":
+//                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+//                                .orElseThrow(() -> new RuntimeException("Error: Role ADMIN is not found."));
+//                        roles.add(adminRole);
+//                        break;
+//                    case "mod":
+//                        Role modRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+//                                .orElseThrow(() -> new RuntimeException("Error: Role MODERATOR is not found."));
+//                        roles.add(modRole);
+//                        break;
+//                    default:
+//                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+//                                .orElseThrow(() -> new RuntimeException("Error: Role USER is not found."));
+//                        roles.add(userRole);
+//                }
+//            });
+//        }
+//
+//        return roles;
+//    }
+//
+//    public boolean validateToken(String token) {
+//        return jwtUtils.validateJwtToken(token);
+//    }
+//
+//    public String getUsernameFromToken(String token) {
+//        return jwtUtils.getUserNameFromJwtToken(token);
+//    }
+//
+//    public void logout() {
+//        SecurityContextHolder.clearContext();
+//    }
+//
+//    @Transactional
+//    public void verifyEmailAndCompleteRegistration(String email, String code) {
+//        if (verificationService.verifyUser(email, code)) {
+//            User user = userRepository.findByEmail(email)
+//                    .orElseThrow(() -> new RuntimeException("User not found"));
+//            user.setVerified(true);
+//            user.setVerificationCode(null);
+//            userRepository.save(user);
+//        } else {
+//            throw new RuntimeException("Invalid verification code");
+//        }
+//    }
+//}

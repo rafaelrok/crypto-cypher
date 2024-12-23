@@ -16,11 +16,20 @@ public class AppCryptoCypher extends Application {
 
     @Override
     public void init() {
+        SpringApplicationBuilder builder = new SpringApplicationBuilder(CryptoCypherApplication.class);
+        // Desabilita a inicialização automática do StageManager
+        builder.headless(false);
         String[] args = getParameters().getRaw().toArray(new String[0]);
-        this.context = new SpringApplicationBuilder()
-                .sources(CryptoCypherApplication.class)
-                .run(args);
+        this.context = builder.run(args);
     }
+
+//    @Override
+//    public void init() {
+//        String[] args = getParameters().getRaw().toArray(new String[0]);
+//        this.context = new SpringApplicationBuilder()
+//                .sources(CryptoCypherApplication.class)
+//                .run(args);
+//    }
 
 //    @Override
 //    public void start(Stage stage) throws IOException {
@@ -35,6 +44,7 @@ public class AppCryptoCypher extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         stage.initStyle(StageStyle.UNDECORATED);
+        context.getBeanFactory().registerSingleton("primaryStage", stage);
         stageManager = context.getBean(StageManager.class, stage);
         displayInitialScene();
     }

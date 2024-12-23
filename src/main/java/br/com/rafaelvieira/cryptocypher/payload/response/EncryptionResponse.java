@@ -1,8 +1,8 @@
 package br.com.rafaelvieira.cryptocypher.payload.response;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import br.com.rafaelvieira.cryptocypher.util.FxTypeName;
 
-@JsonTypeName("encryption")
+@FxTypeName("encryption")
 public class EncryptionResponse {
 
     private Long id;

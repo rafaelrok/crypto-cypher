@@ -72,7 +72,7 @@ public enum ViewFxml {
 
         @Override
         public String getFxmlFile() {
-            return "/view/verify-view.fxml";
+            return "/view/verification-view.fxml";
         }
     };
 

@@ -8,10 +8,14 @@ import javafx.stage.Stage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@Lazy
 public class StageManager {
 
     private static final Logger log = LoggerFactory.getLogger(StageManager.class);
@@ -19,7 +23,9 @@ public class StageManager {
     private final SpringFXMLLoader springFXMLLoader;
     private final Stage primaryStage;
 
-    public StageManager(SpringFXMLLoader springFXMLLoader, Stage primaryStage) {
+    @Autowired
+    public StageManager(SpringFXMLLoader springFXMLLoader,
+                        @Qualifier("primaryStage")Stage primaryStage) {
         this.springFXMLLoader = springFXMLLoader;
         this.primaryStage = primaryStage;
     }

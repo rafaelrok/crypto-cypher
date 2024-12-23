@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -85,6 +86,7 @@ public class AuthController implements Initializable {
     private final VerificationService verificationService;
     private final NavigationService navigationService;
 
+    @Autowired
     public AuthController(AuthService authService,
                           EmailService emailService,
                           VerificationService verificationService, NavigationService navigationService) {
@@ -160,7 +162,8 @@ public class AuthController implements Initializable {
 
             UserAuthentication loginRequest = new UserAuthentication(username, password);
 
-            JwtResponse response = authService.authenticateUser(loginRequest);
+//            JwtResponse response = authService.authenticateUser(loginRequest);
+            AuthService.UserSession response = authService.authenticateUser(username, password);
 
             // Se autenticação bem sucedida
             if (response.isFirstAccess()) {
@@ -190,7 +193,7 @@ public class AuthController implements Initializable {
         }
 
         try {
-            authService.initiatePasswordReset(email);
+//            authService.initiatePasswordReset(email);
 
             // Mostrar campo de código de verificação
             reset_verification_code.setVisible(true);
@@ -243,6 +246,7 @@ public class AuthController implements Initializable {
         String newPassword = reset_new_password.getText();
         String confirmPassword = reset_confirm_password.getText();
         String email = reset_email.getText().trim();
+        String code = reset_verification_code.getText().trim();
 
         if (newPassword.isEmpty() || confirmPassword.isEmpty()) {
             showAlert(Alert.AlertType.WARNING,
@@ -259,7 +263,7 @@ public class AuthController implements Initializable {
         }
 
         try {
-            authService.resetPassword(email, newPassword);
+            authService.resetPassword(email, code, newPassword);
             showAlert(Alert.AlertType.INFORMATION,
                     "Senha Alterada",
                     "Sua senha foi alterada com sucesso.");

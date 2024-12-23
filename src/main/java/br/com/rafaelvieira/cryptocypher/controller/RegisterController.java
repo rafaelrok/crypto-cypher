@@ -64,6 +64,7 @@ public class RegisterController implements Initializable {
                 emailField.getText(),
                 passwordField.getText()
         );
+        
 //                .username(usernameField.getText())
 //                .fullName(fullNameField.getText())
 //                .email(emailField.getText())

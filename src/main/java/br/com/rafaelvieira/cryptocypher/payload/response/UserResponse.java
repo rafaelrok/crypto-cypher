@@ -1,10 +1,10 @@
 package br.com.rafaelvieira.cryptocypher.payload.response;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import br.com.rafaelvieira.cryptocypher.util.FxTypeName;
 
 import java.util.List;
 
-@JsonTypeName("user")
+@FxTypeName("user")
 public class UserResponse {
 
     private Long id;

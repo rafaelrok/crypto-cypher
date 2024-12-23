@@ -34,13 +34,16 @@ module br.com.rafaelvieira.cryptocypher {
     requires spring.context.support;
     requires jakarta.transaction;
     requires jakarta.mail;
+    requires annotations;
 
+    opens br.com.rafaelvieira.cryptocypher.security.jwt;
     opens br.com.rafaelvieira.cryptocypher to javafx.fxml, spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.controller to javafx.fxml, spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.config to spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.service to spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.service.impl to spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.util to spring.core;
+    opens br.com.rafaelvieira.cryptocypher.repository to spring.core, spring.beans, spring.context;
 
     exports br.com.rafaelvieira.cryptocypher;
     exports br.com.rafaelvieira.cryptocypher.controller;
@@ -54,6 +57,7 @@ module br.com.rafaelvieira.cryptocypher {
     exports br.com.rafaelvieira.cryptocypher.logging;
     exports br.com.rafaelvieira.cryptocypher.security.jwt;
     exports br.com.rafaelvieira.cryptocypher.view;
+    exports br.com.rafaelvieira.cryptocypher.repository;
 
     exports br.com.rafaelvieira.cryptocypher.model.user;
     opens br.com.rafaelvieira.cryptocypher.model.user to com.fasterxml.jackson.databind, spring.core, org.hibernate.orm.core;

@@ -12,9 +12,12 @@ import javafx.scene.control.ProgressBar;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
+@Lazy
 public class SplashController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SplashController.class);
@@ -29,7 +32,8 @@ public class SplashController {
     private Timeline timeline;
     private final StageManager stageManager;
 
-    public SplashController(NavigationService navigationService, StageManager stageManager) {
+    @Autowired
+    public SplashController(NavigationService navigationService, @Lazy StageManager stageManager) {
         this.navigationService = navigationService;
         this.stageManager = stageManager;
     }
