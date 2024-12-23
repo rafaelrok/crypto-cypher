@@ -17,33 +17,15 @@ public class AppCryptoCypher extends Application {
     @Override
     public void init() {
         SpringApplicationBuilder builder = new SpringApplicationBuilder(CryptoCypherApplication.class);
-        // Desabilita a inicialização automática do StageManager
         builder.headless(false);
         String[] args = getParameters().getRaw().toArray(new String[0]);
         this.context = builder.run(args);
     }
 
-//    @Override
-//    public void init() {
-//        String[] args = getParameters().getRaw().toArray(new String[0]);
-//        this.context = new SpringApplicationBuilder()
-//                .sources(CryptoCypherApplication.class)
-//                .run(args);
-//    }
-
-//    @Override
-//    public void start(Stage stage) throws IOException {
-//        FXMLLoader fxmlLoader = new FXMLLoader(AppCryptoCypher.class.getResource("view/main-view.fxml"));
-//        fxmlLoader.setControllerFactory(context::getBean);
-//        Scene scene = new Scene(fxmlLoader.load());
-//        stage.setTitle("crypto-cypher");
-//        stage.setScene(scene);
-//        stage.show();
-//    }
-
     @Override
     public void start(Stage stage) throws Exception {
-        stage.initStyle(StageStyle.UNDECORATED);
+        stage.initStyle(StageStyle.UTILITY);
+        stage.centerOnScreen();
         context.getBeanFactory().registerSingleton("primaryStage", stage);
         stageManager = context.getBean(StageManager.class, stage);
         displayInitialScene();

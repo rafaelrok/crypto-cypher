@@ -10,9 +10,12 @@ import javafx.stage.Window;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 
+@Lazy
 @Service
 public class NavigationService {
 
@@ -20,33 +23,39 @@ public class NavigationService {
 
     private Stage stage;
 
+    @Autowired
+    private AuthService authService;
+
+    public NavigationService(AuthService authService) {
+        this.authService = authService;
+    }
+
     public void navigateToSplash() {
         loadScene(ViewFxml.SPLASH_VIEW_FXML.getFxmlFile());
     }
 
     public void navigateToLogin() {
-        loadScene(ViewFxml.LOGIN_VIEW_FXML.getFxmlFile());
-//        loadScene("login-view.fxml");
+        if(authService.hasAnyUsers()) {
+            navigateToRegister();
+        } else {
+            loadScene(ViewFxml.LOGIN_VIEW_FXML.getFxmlFile());
+        }
     }
 
     public void navigateToRegister() {
         loadScene(ViewFxml.REGISTER_VIEW_FXML.getFxmlFile());
-//        loadScene("register-view.fxml");
     }
 
     public void navigateToVerification() {
         loadScene(ViewFxml.VERIFY_VIEW_FXML.getFxmlFile());
-//        loadScene("verification-view.fxml");
     }
 
     public void navigateToMain() {
         loadScene(ViewFxml.MAIN_VIEW_FXML.getFxmlFile());
-//        loadScene("main-view.fxml");
     }
 
     public void navigateToResetPassword() {
         loadScene(ViewFxml.RESET_PASSWORD_VIEW_FXML.getFxmlFile());
-//        loadScene("reset-password-view.fxml");
     }
 
     public Stage getStage() {
@@ -93,14 +102,30 @@ public class NavigationService {
 
     private void loadScene(String fxml) {
         try {
+            if(stage == null) {
+                LOGGER.error("Stage is null. Make sure it's properly initialized.");
+                throw new IllegalStateException("Stage not initialized");
+            }
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
             Parent root = loader.load();
             stage.setScene(new Scene(root));
+            stage.sizeToScene();
+            stage.setOnShown(e -> stage.centerOnScreen());
             stage.show();
         } catch (Exception e) {
             LOGGER.error("Error loading scene: {}", fxml, e);
+            throw new IllegalStateException("Failed to load scene: " + fxml, e);
         }
     }
 
 
+    public boolean shouldRedirectToRegister() {
+        try {
+            return !authService.hasAnyUsers();
+        } catch (Exception e) {
+            LOGGER.error("Error checking for users", e);
+            return false;
+        }
+    }
 }

@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -20,7 +21,6 @@ import java.util.ResourceBundle;
 @Component
 public class RegisterController implements Initializable {
 
-    private final UserRepository userRepository;
     @FXML
     private TextField usernameField;
 
@@ -39,18 +39,17 @@ public class RegisterController implements Initializable {
     @FXML
     private Label messageLabel;
 
-    private final AuthService authService;
-    private final NavigationService navigationService;
-    private final EmailService emailService;
-    private final VerificationService verificationService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private NavigationService navigationService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private VerificationService verificationService;
 
-    public RegisterController(AuthService authService, NavigationService navigationService, EmailService emailService, VerificationService verificationService, UserRepository userRepository) {
-        this.authService = authService;
-        this.navigationService = navigationService;
-        this.emailService = emailService;
-        this.verificationService = verificationService;
-        this.userRepository = userRepository;
-    }
 
     @FXML
     private void handleRegister() {
@@ -64,18 +63,11 @@ public class RegisterController implements Initializable {
                 emailField.getText(),
                 passwordField.getText()
         );
-        
-//                .username(usernameField.getText())
-//                .fullName(fullNameField.getText())
-//                .email(emailField.getText())
-//                .password(passwordField.getText())
-//                .build();
 
         try {
             authService.registerUser(request);
             messageLabel.setText("Registration successful! Please check your email for verification.");
             messageLabel.setStyle("-fx-text-fill: green;");
-            // Mostrar tela de verificação
             final User user = userRepository.findByEmail(emailField.getText()).orElseThrow();
             if (!verificationService.isFirstAccess(user.getEmail())) {
                 switchToLogin();

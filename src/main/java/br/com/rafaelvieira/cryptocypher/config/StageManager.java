@@ -1,5 +1,6 @@
 package br.com.rafaelvieira.cryptocypher.config;
 
+import br.com.rafaelvieira.cryptocypher.service.NavigationService;
 import br.com.rafaelvieira.cryptocypher.view.ViewFxml;
 import javafx.application.Platform;
 import javafx.scene.Parent;
@@ -20,17 +21,32 @@ public class StageManager {
 
     private static final Logger log = LoggerFactory.getLogger(StageManager.class);
 
+    private final NavigationService navigationService;
     private final SpringFXMLLoader springFXMLLoader;
     private final Stage primaryStage;
 
     @Autowired
     public StageManager(SpringFXMLLoader springFXMLLoader,
-                        @Qualifier("primaryStage")Stage primaryStage) {
+                        @Qualifier("primaryStage")Stage primaryStage,
+                        NavigationService navigationService) {
         this.springFXMLLoader = springFXMLLoader;
         this.primaryStage = primaryStage;
+        this.navigationService = navigationService;
     }
 
     public void switchScene(final ViewFxml view) {
+        log.debug("Switching to scene: {}", view.name());
+        navigationService.setStage(primaryStage);
+
+        if (view == ViewFxml.LOGIN_VIEW_FXML) {
+            log.debug("Checking if should redirect to register");
+            if (navigationService.shouldRedirectToRegister()) {
+                log.debug("Redirecting to register view");
+                switchScene(ViewFxml.REGISTER_VIEW_FXML);
+                return;
+            }
+        }
+
         Parent viewRootNodeHierarchy = loadViewNodeHierarchy(view.getFxmlFile());
         show(viewRootNodeHierarchy, view.getTitle());
     }

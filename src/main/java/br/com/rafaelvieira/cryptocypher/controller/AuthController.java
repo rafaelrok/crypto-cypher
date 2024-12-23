@@ -1,31 +1,42 @@
 package br.com.rafaelvieira.cryptocypher.controller;
 
 import br.com.rafaelvieira.cryptocypher.payload.request.UserAuthentication;
-import br.com.rafaelvieira.cryptocypher.payload.response.JwtResponse;
+import br.com.rafaelvieira.cryptocypher.payload.request.UserRegister;
 import br.com.rafaelvieira.cryptocypher.service.AuthService;
 import br.com.rafaelvieira.cryptocypher.service.EmailService;
 import br.com.rafaelvieira.cryptocypher.service.NavigationService;
 import br.com.rafaelvieira.cryptocypher.service.VerificationService;
 import br.com.rafaelvieira.cryptocypher.view.ViewFxml;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 @Component
 public class AuthController implements Initializable {
 
+    // Forms elements
     @FXML
     private AnchorPane main_form;
     @FXML
     private AnchorPane login_form;
     @FXML
     private AnchorPane register_form;
+    @FXML
+    private AnchorPane verify_form;
+    @FXML
+    private AnchorPane reset_password_form;
 
     // Login Form elements
     @FXML
@@ -39,13 +50,9 @@ public class AuthController implements Initializable {
     @FXML
     private Button login_loginBtn;
     @FXML
-    private ComboBox<String> login_user;
-    @FXML
     private Hyperlink login_registerHere;
 
-    // Adicione estes campos FXML
-    @FXML
-    private AnchorPane reset_password_form;
+    // Elements for password reset
     @FXML
     private TextField reset_email;
     @FXML
@@ -66,41 +73,50 @@ public class AuthController implements Initializable {
     private Hyperlink login_forgotPassword;
 
     // Register Form elements
-//    @FXML
-//    private TextField register_email;
-//    @FXML
-//    private TextField register_username;
-//    @FXML
-//    private PasswordField register_password;
-//    @FXML
-//    private TextField register_showPassword;
-//    @FXML
-//    private CheckBox register_checkBox;
+    @FXML
+    private TextField register_email;
+    @FXML
+    private TextField register_username;
+    @FXML
+    private TextField register_fullname;
+    @FXML
+    private PasswordField register_password;
+    @FXML
+    private TextField register_showPassword;
+    @FXML
+    private CheckBox register_checkBox;
     @FXML
     private Button register_signupBtn;
     @FXML
     private Hyperlink register_loginHere;
 
-    private final AuthService authService;
-    private final EmailService emailService;
-    private final VerificationService verificationService;
-    private final NavigationService navigationService;
+    //Elementos para a verificaçao
+    @FXML
+    private TextField verify_code;
+    @FXML
+    private Button verify_verifyBtn;
 
     @Autowired
-    public AuthController(AuthService authService,
-                          EmailService emailService,
-                          VerificationService verificationService, NavigationService navigationService) {
-        this.authService = authService;
-        this.emailService = emailService;
-        this.verificationService = verificationService;
-        this.navigationService = navigationService;
-    }
+    private AuthService authService;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private VerificationService verificationService;
+
+    @Autowired
+    private NavigationService navigationService;
+
 
     @FXML
     public void initialize() {
         setupPasswordVisibility();
         setupNavigationEvents();
         setupButtonActions();
+        setupNavigationRegister();
+        setupNavigationVerify();
+        setupNavigationResetPassword();
     }
 
     private void setupPasswordVisibility() {
@@ -118,25 +134,26 @@ public class AuthController implements Initializable {
         });
 
         // Register form password visibility
-//        register_checkBox.setOnAction(event -> {
-//            if (register_checkBox.isSelected()) {
-//                register_showPassword.setText(register_password.getText());
-//                register_showPassword.setVisible(true);
-//                register_password.setVisible(false);
-//            } else {
-//                register_password.setText(register_showPassword.getText());
-//                register_showPassword.setVisible(false);
-//                register_password.setVisible(true);
-//            }
-//        });
+        register_checkBox.setOnAction(event -> {
+            if (register_checkBox.isSelected()) {
+                register_showPassword.setText(register_password.getText());
+                register_showPassword.setVisible(true);
+                register_password.setVisible(false);
+            } else {
+                register_password.setText(register_showPassword.getText());
+                register_showPassword.setVisible(false);
+                register_password.setVisible(true);
+            }
+        });
     }
 
     private void setupNavigationEvents() {
+        login_form.setVisible(true);
         login_registerHere.setOnAction(event -> {
             login_form.setVisible(false);
             navigationService.navigateToRegister();
             switchToLogin();
-//            register_form.setVisible(true);
+            register_form.setVisible(true);
         });
 
         register_loginHere.setOnAction(event -> {
@@ -145,12 +162,42 @@ public class AuthController implements Initializable {
         });
     }
 
+    private void setupNavigationRegister() {
+        login_registerHere.setOnAction(event -> {
+            login_form.setVisible(false);
+            register_form.setVisible(true);
+            navigationService.navigateToRegister();
+        });
+    }
+
+    private void setupNavigationVerify() {
+        login_registerHere.setOnAction(event -> {
+            login_form.setVisible(false);
+            verify_form.setVisible(true);
+            navigationService.navigateToVerification();
+        });
+    }
+
+    private void setupNavigationResetPassword() {
+        login_forgotPassword.setOnAction(event -> {
+            login_form.setVisible(false);
+            reset_password_form.setVisible(true);
+            navigationService.navigateToResetPassword();
+        });
+
+        reset_back_to_login.setOnAction(event -> {
+            reset_password_form.setVisible(false);
+            login_form.setVisible(true);
+        });
+    }
+
     private void setupButtonActions() {
         login_loginBtn.setOnAction(event -> handleLogin());
-//        register_signupBtn.setOnAction(event -> handleRegister());
+        register_signupBtn.setOnAction(event -> handleRegister());
         reset_send_code_btn.setOnAction(event -> handleSendResetCode());
         reset_verify_code_btn.setOnAction(event -> handleVerifyResetCode());
         reset_password_btn.setOnAction(event -> handleResetPassword());
+        verify_verifyBtn.setOnAction(event -> handleVerify());
     }
 
     private void handleLogin() {
@@ -193,7 +240,7 @@ public class AuthController implements Initializable {
         }
 
         try {
-//            authService.initiatePasswordReset(email);
+            authService.initiatePasswordReset(email);
 
             // Mostrar campo de código de verificação
             reset_verification_code.setVisible(true);
@@ -280,6 +327,82 @@ public class AuthController implements Initializable {
         }
     }
 
+    private void handleRegister() {
+        try {
+            String username = register_username.getText();
+            String fullName = register_fullname.getText();
+            String email = register_email.getText();
+            String password = register_password.isVisible() ?
+                    register_password.getText() :
+                    register_showPassword.getText();
+
+            if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                showAlert(Alert.AlertType.WARNING,
+                        "Campos Vazios",
+                        "Por favor, preencha todos os campos.");
+                return;
+            }
+
+            UserRegister registerRequest = new UserRegister(
+                    username,
+                    fullName,
+                    email,
+                    password
+            );
+
+            authService.registerUser(registerRequest);
+
+            showAlert(Alert.AlertType.INFORMATION,
+                    "Registro Bem-sucedido",
+                    "Por favor, verifique seu email para ativar sua conta.");
+
+            // Limpar campos e voltar para tela de login
+            clearRegisterFields();
+            register_form.setVisible(false);
+            login_form.setVisible(true);
+
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR,
+                    "Erro no Registro",
+                    "Erro ao registrar: " + e.getMessage());
+        }
+    }
+
+    private void handleVerify() {
+        try {
+            String email = reset_email.getText().trim();
+            String code = verify_code.getText().trim();
+
+            if (code.isEmpty()) {
+                showAlert(Alert.AlertType.WARNING,
+                        "Campo Vazio",
+                        "Por favor, insira o código de verificação.");
+                return;
+            }
+
+            if (verificationService.verifyUser(email, code)) {
+                showAlert(Alert.AlertType.INFORMATION,
+                        "Verificação Bem-sucedida",
+                        "Sua conta foi verificada com sucesso.");
+
+                // Limpar campos e voltar para tela de login
+                verify_code.clear();
+                verify_form.setVisible(false);
+                login_form.setVisible(true);
+
+            } else {
+                showAlert(Alert.AlertType.ERROR,
+                        "Código Inválido",
+                        "O código de verificação é inválido.");
+            }
+
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR,
+                    "Erro na Verificação",
+                    "Erro ao verificar: " + e.getMessage());
+        }
+    }
+
     @FXML
     private void switchToLogin() {
         navigationService.closeCurrentAndLoadNew(register_form, ViewFxml.LOGIN_VIEW_FXML.getFxmlFile());
@@ -300,58 +423,39 @@ public class AuthController implements Initializable {
         reset_password_btn.setVisible(false);
     }
 
-//    private void handleRegister() {
-//        try {
-//            String username = register_username.getText();
-//            String email = register_email.getText();
-//            String password = register_password.isVisible() ?
-//                    register_password.getText() :
-//                    register_showPassword.getText();
-//
-//            if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
-//                showAlert(Alert.AlertType.WARNING,
-//                        "Campos Vazios",
-//                        "Por favor, preencha todos os campos.");
-//                return;
-//            }
-//
-//            UserRegister registerRequest = UserRegister.builder()
-//                    .username(username)
-//                    .email(email)
-//                    .password(password)
-//                    .build();
-//
-//            authService.registerUser(registerRequest);
-//
-//            showAlert(Alert.AlertType.INFORMATION,
-//                    "Registro Bem-sucedido",
-//                    "Por favor, verifique seu email para ativar sua conta.");
-//
-//            // Limpar campos e voltar para tela de login
-//            clearRegisterFields();
-//            register_form.setVisible(false);
-//            login_form.setVisible(true);
-//
-//        } catch (Exception e) {
-//            showAlert(Alert.AlertType.ERROR,
-//                    "Erro no Registro",
-//                    "Erro ao registrar: " + e.getMessage());
-//        }
-//    }
-
-//    private void clearRegisterFields() {
-//        register_username.clear();
-//        register_email.clear();
-//        register_password.clear();
-//        register_showPassword.clear();
-//        register_checkBox.setSelected(false);
-//    }
+    private void clearRegisterFields() {
+        register_username.clear();
+        register_email.clear();
+        register_password.clear();
+        register_showPassword.clear();
+        register_checkBox.setSelected(false);
+    }
 
     private void showAlert(Alert.AlertType alertType, String title, String content) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+
+
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.centerOnScreen();
+
+        alert.initModality(Modality.APPLICATION_MODAL);
+
+        stage.initStyle(StageStyle.UTILITY);
+        stage.setResizable(false);
+
+
+        Platform.runLater(() -> {
+            stage.requestFocus();
+            alert.getDialogPane().getButtonTypes().stream()
+                    .map(alert.getDialogPane()::lookupButton)
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .ifPresent(Node::requestFocus);
+        });
+
         alert.showAndWait();
     }
 

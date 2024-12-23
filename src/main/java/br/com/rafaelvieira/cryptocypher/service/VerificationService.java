@@ -75,4 +75,14 @@ public class VerificationService {
         }
         return code.toString();
     }
+
+    @Transactional
+    public String generateResetCode(String email) {
+        String code = generateVerificationCode();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setVerificationCode(code);
+        userRepository.save(user);
+        return code;
+    }
 }

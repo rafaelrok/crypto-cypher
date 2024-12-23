@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,17 +25,17 @@ public class VerificationController {
     @FXML
     private ProgressIndicator progressIndicator;
 
-    private final VerificationService verificationService;
-    private final NavigationService navigationService;
+    @Autowired
+    private VerificationService verificationService;
+
+    @Autowired
+    private NavigationService navigationService;
 
     private String userEmail;
+
     private VerificationType verificationType;
 
-    public VerificationController(VerificationService verificationService,
-                                      NavigationService navigationService) {
-        this.verificationService = verificationService;
-        this.navigationService = navigationService;
-    }
+
 
     public void initialize(String email, VerificationType type) {
         this.userEmail = email;
@@ -60,7 +61,6 @@ public class VerificationController {
 
         progressIndicator.setVisible(true);
 
-        // Executar verificação em uma thread separada
         new Thread(() -> {
             try {
                 boolean isValid = switch (verificationType) {

@@ -28,15 +28,15 @@ public class SplashController {
     @FXML
     private Label statusLabel;
 
-    private final NavigationService navigationService;
-    private Timeline timeline;
-    private final StageManager stageManager;
+    @Autowired
+    private NavigationService navigationService;
 
     @Autowired
-    public SplashController(NavigationService navigationService, @Lazy StageManager stageManager) {
-        this.navigationService = navigationService;
-        this.stageManager = stageManager;
-    }
+    @Lazy
+    private StageManager stageManager;
+
+    private Timeline timeline;
+
 
     @FXML
     public void initialize() {
@@ -49,36 +49,28 @@ public class SplashController {
 
         // Adiciona frames para a animação
         timeline.getKeyFrames().addAll(
-                // Início - 0%
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(progressBar.progressProperty(), 0),
                         new KeyValue(statusLabel.textProperty(), "Iniciando...")),
 
-                // 25% - Carregando configurações
                 new KeyFrame(Duration.seconds(1),
                         new KeyValue(progressBar.progressProperty(), 0.25),
                         new KeyValue(statusLabel.textProperty(), "Carregando configurações...")),
 
-                // 50% - Verificando serviços
                 new KeyFrame(Duration.seconds(2),
                         new KeyValue(progressBar.progressProperty(), 0.5),
                         new KeyValue(statusLabel.textProperty(), "Verificando serviços...")),
 
-                // 75% - Preparando interface
                 new KeyFrame(Duration.seconds(3),
                         new KeyValue(progressBar.progressProperty(), 0.75),
                         new KeyValue(statusLabel.textProperty(), "Preparando interface...")),
 
-                // 100% - Concluído
                 new KeyFrame(Duration.seconds(4),
                         new KeyValue(progressBar.progressProperty(), 1.0),
                         new KeyValue(statusLabel.textProperty(), "Concluído!"))
         );
 
-        // Quando a animação terminar, abre a tela de login
         timeline.setOnFinished(e -> Platform.runLater(this::openLoginScreen));
-
-        // Inicia a animação
         timeline.play();
     }
 
@@ -92,29 +84,6 @@ public class SplashController {
             LOGGER.error("Error opening login screen", e);
         }
     }
-
-
-//    private void openLoginScreen() {
-//        try {
-//            // Pequeno delay antes de fechar a splash screen
-//            Thread.sleep(500);
-//
-//            // Obtém a stage atual
-//            Stage splashStage = (Stage) progressBar.getScene().getWindow();
-//
-//            // Fecha a splash screen
-//            splashStage.close();
-//
-//            // Abre a tela de login
-////            stageManager.switchScene(ViewFxml.LOGIN_VIEW_FXML);
-//            navigationService.navigateToLogin();
-//
-//        } catch (InterruptedException e) {
-//            Thread.currentThread().interrupt();
-//        } catch (Exception e) {
-//            LOGGER.error("Error opening login screen", e);
-//        }
-//    }
 
     // Método para cancelar a animação se necessário
     public void cancelTimeline() {

@@ -3,16 +3,14 @@ package br.com.rafaelvieira.cryptocypher.service;
 import br.com.rafaelvieira.cryptocypher.model.role.Role;
 import br.com.rafaelvieira.cryptocypher.model.user.User;
 import br.com.rafaelvieira.cryptocypher.enums.ERole;
-import br.com.rafaelvieira.cryptocypher.payload.request.UserAuthentication;
 import br.com.rafaelvieira.cryptocypher.payload.request.UserRegister;
-import br.com.rafaelvieira.cryptocypher.payload.response.JwtResponse;
 import br.com.rafaelvieira.cryptocypher.repository.RoleRepository;
 import br.com.rafaelvieira.cryptocypher.repository.UserRepository;
 import br.com.rafaelvieira.cryptocypher.security.UserDetailsImpl;
-import br.com.rafaelvieira.cryptocypher.security.jwt.JwtUtils;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
-import org.springframework.http.ResponseCookie;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -25,13 +23,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class AuthService {
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
+
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -51,7 +49,7 @@ public class AuthService {
         this.emailService = emailService;
     }
 
-    public class UserSession {
+    public static class UserSession {
         private Long id;
         private String username;
         private String email;
@@ -99,7 +97,16 @@ public class AuthService {
         }
     }
 
-
+    public boolean hasAnyUsers() {
+        try {
+            long count = userRepository.count();
+            log.debug("Number of users in system: {}", count);
+            return count > 0;
+        } catch (Exception e) {
+            log.error("Error checking for users", e);
+            return false;
+        }
+    }
 
     public UserSession authenticateUser(String username, String password) {
         try {
@@ -209,6 +216,18 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setVerificationCode(null);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void initiatePasswordReset(String email) throws MessagingException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String resetCode = verificationService.generateVerificationCode();
+        user.setVerificationCode(resetCode);
+        userRepository.save(user);
+
+        emailService.sendPasswordResetEmail(email, resetCode);
     }
 
     public UserSession getCurrentSession() {
