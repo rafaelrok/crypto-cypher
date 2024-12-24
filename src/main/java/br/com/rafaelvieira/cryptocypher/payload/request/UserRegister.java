@@ -1,12 +1,12 @@
 package br.com.rafaelvieira.cryptocypher.payload.request;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import br.com.rafaelvieira.cryptocypher.util.FxTypeName;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.Email;
 
 import java.util.Set;
 
-@JsonTypeName("user")
+@FxTypeName("user")
 public class UserRegister {
 
     @Nullable

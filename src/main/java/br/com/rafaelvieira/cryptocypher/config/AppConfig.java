@@ -1,21 +1,21 @@
 package br.com.rafaelvieira.cryptocypher.config;
 
 import br.com.rafaelvieira.cryptocypher.logging.ExceptionWriter;
-import br.com.rafaelvieira.cryptocypher.service.AuthService;
-import br.com.rafaelvieira.cryptocypher.service.EncryptionService;
-import br.com.rafaelvieira.cryptocypher.service.NavigationService;
+import br.com.rafaelvieira.cryptocypher.repository.RoleRepository;
+import br.com.rafaelvieira.cryptocypher.repository.UserRepository;
+import br.com.rafaelvieira.cryptocypher.service.*;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.StringWriter;
 import java.util.ResourceBundle;
 
 @Configuration
+@ComponentScan(basePackages = "br.com.rafaelvieira.cryptocypher")
 public class AppConfig {
 
     @Autowired
@@ -23,6 +23,25 @@ public class AppConfig {
 
     @Autowired
     private AuthService authService;
+
+    @Bean
+    @Lazy
+    public AuthService authService(
+            AuthenticationManager authenticationManager,
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            PasswordEncoder passwordEncoder,
+            VerificationService verificationService,
+            EmailService emailService) {
+        return new AuthService(
+                authenticationManager,
+                userRepository,
+                roleRepository,
+                passwordEncoder,
+                verificationService,
+                emailService
+        );
+    }
 
     @Bean
     public EncryptionService encryptionService() {

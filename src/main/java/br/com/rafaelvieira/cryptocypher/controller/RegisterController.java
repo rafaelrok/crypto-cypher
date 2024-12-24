@@ -39,17 +39,24 @@ public class RegisterController implements Initializable {
     @FXML
     private Label messageLabel;
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private AuthService authService;
-    @Autowired
-    private NavigationService navigationService;
-    @Autowired
-    private EmailService emailService;
-    @Autowired
-    private VerificationService verificationService;
+    private final UserRepository userRepository;
+    private final AuthService authService;
+    private final NavigationService navigationService;
+    private final EmailService emailService;
+    private final VerificationService verificationService;
 
+    @Autowired
+    public RegisterController(UserRepository userRepository,
+                              AuthService authService,
+                              NavigationService navigationService,
+                              EmailService emailService,
+                              VerificationService verificationService) {
+        this.userRepository = userRepository;
+        this.authService = authService;
+        this.navigationService = navigationService;
+        this.emailService = emailService;
+        this.verificationService = verificationService;
+    }
 
     @FXML
     private void handleRegister() {

@@ -1,11 +1,7 @@
 package br.com.rafaelvieira.cryptocypher.controller;
 
-import br.com.rafaelvieira.cryptocypher.payload.request.UserAuthentication;
 import br.com.rafaelvieira.cryptocypher.payload.request.UserRegister;
-import br.com.rafaelvieira.cryptocypher.service.AuthService;
-import br.com.rafaelvieira.cryptocypher.service.EmailService;
-import br.com.rafaelvieira.cryptocypher.service.NavigationService;
-import br.com.rafaelvieira.cryptocypher.service.VerificationService;
+import br.com.rafaelvieira.cryptocypher.service.*;
 import br.com.rafaelvieira.cryptocypher.view.ViewFxml;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -16,7 +12,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -25,6 +22,8 @@ import java.util.ResourceBundle;
 
 @Component
 public class AuthController implements Initializable {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     // Forms elements
     @FXML
@@ -96,27 +95,36 @@ public class AuthController implements Initializable {
     @FXML
     private Button verify_verifyBtn;
 
-    @Autowired
     private AuthService authService;
-
-    @Autowired
     private EmailService emailService;
-
-    @Autowired
     private VerificationService verificationService;
-
-    @Autowired
     private NavigationService navigationService;
 
+    public AuthController() {}
 
-    @FXML
-    public void initialize() {
-        setupPasswordVisibility();
-        setupNavigationEvents();
-        setupButtonActions();
-        setupNavigationRegister();
-        setupNavigationVerify();
-        setupNavigationResetPassword();
+    public AuthController(AuthService authService, EmailService emailService,
+                          VerificationService verificationService,
+                          NavigationService navigationService) {
+        this.authService = authService;
+        this.emailService = emailService;
+        this.verificationService = verificationService;
+        this.navigationService = navigationService;
+    }
+
+    private void setupNavigationEvents() {
+        login_registerHere.setOnAction(event -> {
+            login_form.setVisible(false);
+            register_form.setVisible(true);
+//            verify_form.setVisible(false);
+//            reset_password_form.setVisible(false);
+        });
+
+        register_loginHere.setOnAction(event -> {
+            register_form.setVisible(false);
+            login_form.setVisible(true);
+//            verify_form.setVisible(false);
+//            reset_password_form.setVisible(false);
+        });
     }
 
     private void setupPasswordVisibility() {
@@ -147,34 +155,19 @@ public class AuthController implements Initializable {
         });
     }
 
-    private void setupNavigationEvents() {
-        login_form.setVisible(true);
-        login_registerHere.setOnAction(event -> {
-            login_form.setVisible(false);
-            navigationService.navigateToRegister();
-            switchToLogin();
-            register_form.setVisible(true);
-        });
-
-        register_loginHere.setOnAction(event -> {
-            register_form.setVisible(false);
-            login_form.setVisible(true);
-        });
-    }
-
     private void setupNavigationRegister() {
         login_registerHere.setOnAction(event -> {
             login_form.setVisible(false);
             register_form.setVisible(true);
-            navigationService.navigateToRegister();
+//            navigationService.navigateToRegister();
         });
     }
 
     private void setupNavigationVerify() {
         login_registerHere.setOnAction(event -> {
-            login_form.setVisible(false);
+//            login_form.setVisible(false);
             verify_form.setVisible(true);
-            navigationService.navigateToVerification();
+//            navigationService.navigateToVerification();
         });
     }
 
@@ -182,7 +175,7 @@ public class AuthController implements Initializable {
         login_forgotPassword.setOnAction(event -> {
             login_form.setVisible(false);
             reset_password_form.setVisible(true);
-            navigationService.navigateToResetPassword();
+//            navigationService.navigateToResetPassword();
         });
 
         reset_back_to_login.setOnAction(event -> {
@@ -207,17 +200,18 @@ public class AuthController implements Initializable {
                     login_password.getText() :
                     login_showPassword.getText();
 
-            UserAuthentication loginRequest = new UserAuthentication(username, password);
-
-//            JwtResponse response = authService.authenticateUser(loginRequest);
             AuthService.UserSession response = authService.authenticateUser(username, password);
 
             // Se autenticação bem sucedida
             if (response.isFirstAccess()) {
+                emailService.sendVerificationEmail(response.getEmail(), response.getVerificationCode());
                 showAlert(Alert.AlertType.INFORMATION,
                         "Primeiro Acesso",
                         "Por favor, verifique seu email para completar o primeiro acesso.");
                 // Aqui você pode navegar para a tela de verificação
+                verify_form.setVisible(true);
+//                navigationService.navigateToVerification();
+
             } else {
                 // Navegar para a tela principal
 //                 stageManager.switchScene(ViewFxml.MAIN_VIEW_FXML);
@@ -290,6 +284,8 @@ public class AuthController implements Initializable {
     }
 
     private void handleResetPassword() {
+        final AuthService authService = new AuthService();
+
         String newPassword = reset_new_password.getText();
         String confirmPassword = reset_confirm_password.getText();
         String email = reset_email.getText().trim();
@@ -470,139 +466,18 @@ public class AuthController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initialize();
-    }
-}
+        setupPasswordVisibility();
+        setupNavigationEvents();
+        setupButtonActions();
+        setupNavigationRegister();
+//        setupNavigationVerify();
+//        setupNavigationResetPassword();
 
-//package br.com.rafaelvieira.cryptocypher.controller;
-//
-//
-//import br.com.rafaelvieira.cryptocypher.model.user.User;
-//import br.com.rafaelvieira.cryptocypher.payload.request.UserAuthentication;
-//import br.com.rafaelvieira.cryptocypher.payload.request.UserRegister;
-//import br.com.rafaelvieira.cryptocypher.payload.response.JwtResponse;
-//import br.com.rafaelvieira.cryptocypher.payload.response.MessageResponse;
-//import br.com.rafaelvieira.cryptocypher.repository.UserRepository;
-//import br.com.rafaelvieira.cryptocypher.security.jwt.JwtUtils;
-//import br.com.rafaelvieira.cryptocypher.service.AuthService;
-//import br.com.rafaelvieira.cryptocypher.service.EmailService;
-//import br.com.rafaelvieira.cryptocypher.service.VerificationService;
-//import jakarta.validation.Valid;
-//import org.springframework.http.HttpHeaders;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.security.authentication.AuthenticationManager;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//
-//import java.util.Random;
-//
-//@Controller
-//@RequestMapping("/auth")
-//public class AuthController {
-//
-//    private final AuthenticationManager authenticationManager;
-//    private final UserRepository userRepository;
-//    private final PasswordEncoder passwordEncoder;
-//    private final JwtUtils jwtUtils;
-//    private final EmailService emailService;
-//    private final VerificationService verificationService;
-//    private final AuthService authService;
-//
-//    public AuthController(AuthenticationManager authenticationManager,
-//                          UserRepository userRepository,
-//                          PasswordEncoder passwordEncoder,
-//                          JwtUtils jwtUtils,
-//                          EmailService emailService,
-//                          VerificationService verificationService, AuthService authService) {
-//        this.authenticationManager = authenticationManager;
-//        this.userRepository = userRepository;
-//        this.passwordEncoder = passwordEncoder;
-//        this.jwtUtils = jwtUtils;
-//        this.emailService = emailService;
-//        this.verificationService = verificationService;
-//        this.authService = authService;
-//    }
-//
-//    @PostMapping("/register")
-//    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegister registerRequest) {
-//        if (userRepository.existsByUsername(registerRequest.getUsername())) {
-//            return ResponseEntity.badRequest()
-//                    .body(new MessageResponse("Error: Username is already taken!"));
-//        }
-//
-//        if (userRepository.existsByEmail(registerRequest.getEmail())) {
-//            return ResponseEntity.badRequest()
-//                    .body(new MessageResponse("Error: Email is already in use!"));
-//        }
-//
-//        // Create verification code
-//        String verificationCode = generateVerificationCode();
-//
-//        // Create new user
-//        User user = User.builder()
-//                .username(registerRequest.getUsername())
-//                .email(registerRequest.getEmail())
-//                .password(passwordEncoder.encode(registerRequest.getPassword()))
-//                .fullName(registerRequest.getFullName())
-//                .isVerified(false)
-//                .isFirstAccess(true)
-//                .verificationCode(verificationCode)
-//                .build();
-//
-//        userRepository.save(user);
-//
-//        // Send verification email
-//        emailService.sendVerificationEmail(user.getEmail(), verificationCode);
-//
-//        return ResponseEntity.ok(new MessageResponse("User registered successfully! Please check your email for verification."));
-//    }
-//
-//    @PostMapping("/signin")
-//    public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserAuthentication loginRequest) {
-//        JwtResponse jwtResponse = authService.authenticateUser(loginRequest);
-//
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.SET_COOKIE, jwtResponse.getTokenCookie().toString())
-//                .body(jwtResponse);
-//    }
-//
-//    @PostMapping("/verify")
-//    public ResponseEntity<?> verifyUser(@RequestBody String code) {
-//        return verificationService.verifyUser(code)
-//                ? ResponseEntity.ok(new MessageResponse("User verified successfully!"))
-//                : ResponseEntity.badRequest().body(new MessageResponse("Invalid verification code!"));
-//    }
-//
-//    @PostMapping("/reset-password")
-//    public ResponseEntity<?> resetPassword(@RequestBody String email) {
-//        User user = userRepository.findByEmail(email)
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        String resetCode = generateVerificationCode();
-//        user.setVerificationCode(resetCode);
-//        userRepository.save(user);
-//
-//        emailService.sendPasswordResetEmail(email, resetCode);
-//
-//        return ResponseEntity.ok(new MessageResponse("Password reset code sent to your email!"));
-//    }
-//
-//    @PostMapping("/verify-reset")
-//    public ResponseEntity<?> verifyResetCode(@RequestBody String code) {
-//        return verificationService.verifyResetCode(code)
-//                ? ResponseEntity.ok(new MessageResponse("Code verified successfully!"))
-//                : ResponseEntity.badRequest().body(new MessageResponse("Invalid reset code!"));
-//    }
-//
-//    private String generateVerificationCode() {
-//        Random random = new Random();
-//        StringBuilder code = new StringBuilder();
-//        for (int i = 0; i < 8; i++) {
-//            code.append(random.nextInt(10));
-//        }
-//        return code.toString();
-//    }
-//}
+        // Garanta que apenas o form de login esteja visível inicialmente
+        login_form.setVisible(true);
+        register_form.setVisible(false);
+        verify_form.setVisible(false);
+        reset_password_form.setVisible(false);
+    }
+
+}

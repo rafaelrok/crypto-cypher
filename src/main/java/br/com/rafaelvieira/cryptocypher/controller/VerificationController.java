@@ -25,17 +25,19 @@ public class VerificationController {
     @FXML
     private ProgressIndicator progressIndicator;
 
-    @Autowired
-    private VerificationService verificationService;
-
-    @Autowired
-    private NavigationService navigationService;
+    private final VerificationService verificationService;
+    private final NavigationService navigationService;
 
     private String userEmail;
 
     private VerificationType verificationType;
 
 
+    @Autowired
+    public VerificationController(VerificationService verificationService, NavigationService navigationService) {
+        this.verificationService = verificationService;
+        this.navigationService = navigationService;
+    }
 
     public void initialize(String email, VerificationType type) {
         this.userEmail = email;

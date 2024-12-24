@@ -1,10 +1,10 @@
 package br.com.rafaelvieira.cryptocypher.payload.request;
 
-import com.fasterxml.jackson.annotation.JsonTypeName;
+import br.com.rafaelvieira.cryptocypher.util.FxTypeName;
 import jakarta.annotation.Nullable;;
 
 
-@JsonTypeName("encryption")
+@FxTypeName("encryption")
 public class EncryptionRequest {
 
     @Nullable

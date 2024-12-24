@@ -42,7 +42,6 @@ module br.com.rafaelvieira.cryptocypher {
     opens br.com.rafaelvieira.cryptocypher.config to spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.service to spring.core, spring.beans, spring.context;
     opens br.com.rafaelvieira.cryptocypher.service.impl to spring.core, spring.beans, spring.context;
-    opens br.com.rafaelvieira.cryptocypher.util to spring.core;
     opens br.com.rafaelvieira.cryptocypher.repository to spring.core, spring.beans, spring.context;
 
     exports br.com.rafaelvieira.cryptocypher;
@@ -71,4 +70,5 @@ module br.com.rafaelvieira.cryptocypher {
     opens br.com.rafaelvieira.cryptocypher.payload.request to com.fasterxml.jackson.databind, spring.core, org.hibernate.orm.core;
     exports br.com.rafaelvieira.cryptocypher.payload.response;
     opens br.com.rafaelvieira.cryptocypher.payload.response to com.fasterxml.jackson.databind, spring.core, org.hibernate.orm.core;
+    opens br.com.rafaelvieira.cryptocypher.util to spring.beans, spring.context, spring.core;
 }

@@ -1,10 +1,8 @@
-package br.com.rafaelvieira.cryptocypher.service;
-
-import org.springframework.stereotype.Service;
+package br.com.rafaelvieira.cryptocypher.util;
 
 import java.util.Random;
 
-@Service
+
 public class CodeGeneratorService {
 
     public String generateVerificationCode() {

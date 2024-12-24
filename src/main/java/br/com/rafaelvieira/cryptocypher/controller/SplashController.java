@@ -28,8 +28,7 @@ public class SplashController {
     @FXML
     private Label statusLabel;
 
-    @Autowired
-    private NavigationService navigationService;
+    private final NavigationService navigationService;
 
     @Autowired
     @Lazy
@@ -37,6 +36,10 @@ public class SplashController {
 
     private Timeline timeline;
 
+    @Autowired
+    public SplashController(NavigationService navigationService) {
+        this.navigationService = navigationService;
+    }
 
     @FXML
     public void initialize() {
